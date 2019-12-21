@@ -17,6 +17,36 @@
         <div class="mb-4">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
+            for="firstName"
+            >First Name</label
+          >
+          <input
+            id="firstName"
+            name="firstName"
+            v-model="firstName"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            placeholder="First Name"
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="lastName"
+            >Last Name</label
+          >
+          <input
+            id="lastName"
+            name="lastName"
+            v-model="lastName"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            placeholder="Last Name"
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
             for="emailAddress"
             >Email Address</label
           >
@@ -50,15 +80,15 @@
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
-              Sign In
+              Sign Up
             </button>
           </div>
           <div class="flex flex-col text-left">
             <nuxt-link
               class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-              to="/sign-up"
+              to="/"
             >
-              Create Account
+              Log In
             </nuxt-link>
             <nuxt-link
               class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
@@ -80,17 +110,28 @@ export default {
     return {
       errors: [],
       emailAddress: '',
-      password: ''
+      firstName: '',
+      lastName: '',
+      password: '',
+      picture: ''
     }
   },
   methods: {
     onSubmit() {
       // plugin fns
       const validEmail = this.$validEmail('Email Address', this.emailAddress)
-      const validPassword = this.$validTextInput('Password', this.password)
+      const validFirstName = this.$validTextInput('First Name', this.firstName)
+      const validLastName = this.$validTextInput('Last Name', this.lastName)
+      const validPassword = this.$validPassword('Password', this.password)
       // clear errors
       this.errors = []
       // validate
+      if (!validFirstName.valid) {
+        this.errors.push(validFirstName.message)
+      }
+      if (!validLastName.valid) {
+        this.errors.push(validLastName.message)
+      }
       if (!validEmail.valid) {
         this.errors.push(validEmail.message)
       }
@@ -102,18 +143,23 @@ export default {
         return
       }
       // set up post data obj
-      console.log('ready to login')
-      // const postData = {
-      //   emailAddress: this.emailAddress,
-      //   password: this.password,
-      // }
-      // return this.$axios
-      //   .$post(process.env.baseUrl + '/dev/api/users/create', postData)
-      //   .then((data) => {
-      //     console.log('data', data)
-      //     // vuexContext.commit("method", data);
-      //   })
-      //   .catch((e) => console.error(e))
+      const postData = {
+        emailAddress: this.emailAddress,
+        firstName: this.firstName,
+        lastName: this.lastName,
+        password: this.password,
+        picture: this.picture
+      }
+      return (
+        this.$axios
+          // .$post(process.env.baseUrl + '/api/users/create', postData)
+          .$post('', postData)
+          .then((data) => {
+            console.log('data', data)
+            // vuexContext.commit("method", data);
+          })
+          .catch((e) => console.error(e))
+      )
     }
   }
 }

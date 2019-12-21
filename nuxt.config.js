@@ -67,9 +67,12 @@ export default {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {
-    baseUrl: process.env.BASE_URL || 'http://localhost:3000'
-  },
+  // axios: {
+  //   browserBaseURL:
+  //     process.env.BASE_URL ||
+  //     '',
+  //   https: true
+  // },
   /*
    ** Build configuration
    */
@@ -88,10 +91,10 @@ export default {
         })
       }
     }
-  },
-  env: {
-    apiUrl:
-      process.env.API_URL ||
-      'https://qvdh57upr6.execute-api.us-west-2.amazonaws.com'
   }
+  // env: {
+  //   apiUrl:
+  //     process.env.API_URL ||
+  //     ''
+  // }
 }
