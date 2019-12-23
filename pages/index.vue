@@ -62,7 +62,7 @@
             </nuxt-link>
             <nuxt-link
               class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-              to="/"
+              to="/password-forgot"
             >
               Forgot Password?
             </nuxt-link>

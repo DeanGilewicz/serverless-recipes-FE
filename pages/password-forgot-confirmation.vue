@@ -17,46 +17,31 @@
         <div class="mb-4">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
-            for="firstName"
-            >First Name</label
+            for="confirmationCode"
+            >Confirmation Code</label
           >
           <input
-            id="firstName"
-            name="firstName"
-            v-model="firstName"
+            id="confirmationCode"
+            name="confirmationCode"
+            v-model="confirmationCode"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
-            placeholder="First Name"
+            placeholder="Confirmation Code"
           />
         </div>
         <div class="mb-4">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
-            for="lastName"
-            >Last Name</label
+            for="username"
+            >Username</label
           >
           <input
-            id="lastName"
-            name="lastName"
-            v-model="lastName"
+            id="username"
+            name="username"
+            v-model="username"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
-            placeholder="Last Name"
-          />
-        </div>
-        <div class="mb-4">
-          <label
-            class="block text-gray-700 text-sm font-bold mb-2"
-            for="emailAddress"
-            >Email Address</label
-          >
-          <input
-            id="emailAddress"
-            name="emailAddress"
-            v-model="emailAddress"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            type="text"
-            placeholder="Email Address"
+            placeholder="Username"
           />
         </div>
         <div class="mb-4">
@@ -80,22 +65,8 @@
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
-              Sign Up
+              Reset Password
             </button>
-          </div>
-          <div class="flex flex-col text-left">
-            <nuxt-link
-              class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-              to="/"
-            >
-              Log In
-            </nuxt-link>
-            <nuxt-link
-              class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-              to="/password-forgot"
-            >
-              Forgot Password?
-            </nuxt-link>
           </div>
         </div>
       </form>
@@ -109,31 +80,28 @@ export default {
   data() {
     return {
       errors: [],
-      emailAddress: '',
-      firstName: '',
-      lastName: '',
-      password: '',
-      picture: ''
+      confirmationCode: '',
+      username: '',
+      password: ''
     }
   },
   methods: {
     onSubmit() {
       // plugin fns
-      const validEmail = this.$validEmail('Email Address', this.emailAddress)
-      const validFirstName = this.$validTextInput('First Name', this.firstName)
-      const validLastName = this.$validTextInput('Last Name', this.lastName)
+      const validConfirmationCode = this.$validTextInput(
+        'Confirmation Code',
+        this.confirmationCode
+      )
+      const validUsername = this.$validEmail('Username', this.username)
       const validPassword = this.$validPassword('Password', this.password)
       // clear errors
       this.errors = []
       // validate
-      if (!validFirstName.valid) {
-        this.errors.push(validFirstName.message)
+      if (!validConfirmationCode.valid) {
+        this.errors.push(validConfirmationCode.message)
       }
-      if (!validLastName.valid) {
-        this.errors.push(validLastName.message)
-      }
-      if (!validEmail.valid) {
-        this.errors.push(validEmail.message)
+      if (!validUsername.valid) {
+        this.errors.push(validUsername.message)
       }
       if (!validPassword.valid) {
         this.errors.push(validPassword.message)
@@ -144,19 +112,19 @@ export default {
       }
       // set up post data obj
       const postData = {
-        emailAddress: this.emailAddress,
-        firstName: this.firstName,
-        lastName: this.lastName,
-        password: this.password,
-        picture: this.picture
+        confirmationCode: this.confirmationCode,
+        username: this.username,
+        password: this.password
       }
       return this.$axios
-        .$post('/dev/api/users/create', postData)
+        .$post('/dev/api/users/forgotPasswordConfirm', postData)
         .then((data) => {
           console.log('data', data)
           // vuexContext.commit("method", data);
         })
-        .catch((e) => console.error(e))
+        .catch((e) => {
+          console.error(e)
+        })
     }
   }
 }
