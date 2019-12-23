@@ -9,7 +9,7 @@
         <div v-if="errors.length > 0" class="mb-8 text-left">
           <p>Oh no, we have some errors:</p>
           <ul>
-            <li v-for="error in errors" class="list-disc">
+            <li v-for="(error, index) in errors" :key="index" class="list-disc">
               {{ error }}
             </li>
           </ul>
@@ -150,16 +150,13 @@ export default {
         password: this.password,
         picture: this.picture
       }
-      return (
-        this.$axios
-          // .$post(process.env.baseUrl + '/api/users/create', postData)
-          .$post('', postData)
-          .then((data) => {
-            console.log('data', data)
-            // vuexContext.commit("method", data);
-          })
-          .catch((e) => console.error(e))
-      )
+      return this.$axios
+        .$post('/dev/api/users/create', postData)
+        .then((data) => {
+          console.log('data', data)
+          // vuexContext.commit("method", data);
+        })
+        .catch((e) => console.error(e))
     }
   }
 }

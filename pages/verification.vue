@@ -17,56 +17,40 @@
         <div class="mb-4">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
-            for="emailAddress"
-            >Email Address</label
+            for="username"
+            >Username</label
           >
           <input
-            id="emailAddress"
-            name="emailAddress"
-            v-model="emailAddress"
+            id="username"
+            name="username"
+            v-model="username"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
-            placeholder="Email Address"
+            placeholder="Username"
           />
         </div>
         <div class="mb-4">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
-            for="password"
-            >Password</label
+            for="confirmation-code"
+            >Confirmation Code</label
           >
           <input
-            id="password"
-            name="password"
-            v-model="password"
+            id="confirmation-code"
+            name="confirmation-code"
+            v-model="confirmationCode"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
             type="password"
             placeholder="******"
           />
         </div>
         <div class="flex items-center justify-between">
-          <div>
-            <button
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
-              Sign In
-            </button>
-          </div>
-          <div class="flex flex-col text-left">
-            <nuxt-link
-              class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-              to="/sign-up"
-            >
-              Create Account
-            </nuxt-link>
-            <nuxt-link
-              class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-              to="/"
-            >
-              Forgot Password?
-            </nuxt-link>
-          </div>
+          <button
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            Confirm
+          </button>
         </div>
       </form>
     </div>
@@ -79,41 +63,50 @@ export default {
   data() {
     return {
       errors: [],
-      emailAddress: '',
-      password: ''
+      username: '',
+      confirmationCode: ''
     }
   },
   methods: {
     onSubmit() {
       // plugin fns
-      const validEmail = this.$validEmail('Email Address', this.emailAddress)
-      const validPassword = this.$validTextInput('Password', this.password)
+      const validUsername = this.$validTextInput('Username', this.username)
+      const validConfirmationCode = this.$validTextInput(
+        'Confirmation Code',
+        this.confirmationCode
+      )
       // clear errors
       this.errors = []
       // validate
-      if (!validEmail.valid) {
-        this.errors.push(validEmail.message)
+      if (!validUsername.valid) {
+        this.errors.push(validUsername.message)
       }
-      if (!validPassword.valid) {
-        this.errors.push(validPassword.message)
+      if (!validConfirmationCode.valid) {
+        this.errors.push(validConfirmationCode.message)
       }
       // do not make network request if errors
       if (this.errors.length > 0) {
         return
       }
       // set up post data obj
-      console.log('ready to login')
-      // const postData = {
-      //   emailAddress: this.emailAddress,
-      //   password: this.password,
-      // }
-      // return this.$axios
-      //   .$post(process.env.baseUrl + '/dev/api/users/create', postData)
-      //   .then((data) => {
-      //     console.log('data', data)
-      //     // vuexContext.commit("method", data);
-      //   })
-      //   .catch((e) => console.error(e))
+      const postData = {
+        username: this.username,
+        confirmationCode: this.confirmationCode
+      }
+      return this.$axios
+        .$post('/dev/api/users/confirm', postData)
+        .then((data) => {
+          console.log('data', data)
+          // vuexContext.commit("method", data);
+        })
+        .catch((e) => {
+          // console.log(e)
+          this.errors.push('Username and password combination not found')
+          /* eslint-disable unicorn/prefer-includes */
+          // if (e.indexOf('Username/client id combination not found') > -1) {
+          //   this.errors.push('Username and password combination not found')
+          // }
+        })
     }
   }
 }

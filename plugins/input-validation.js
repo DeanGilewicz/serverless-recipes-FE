@@ -40,7 +40,7 @@ const validPassword = (inputName, inputValue) => {
   }
   if (!re.test(inputValue)) {
     return validationFailure(
-      `Please provide a password that is at least six characters and contains at least one number, one lowercase and one uppercase letter`
+      `Please provide a password that is at least eight characters and contains at least one number, one special character, one lowercase and one uppercase letter`
     )
   }
   return validationSuccess()

@@ -35,6 +35,7 @@ export default {
   rules: {
     // 'semi': [2, 'never'],
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+    // 'prefer-includes': 'off'
     // 'vue/max-attributes-per-line': 'off',
     // 'prettier/prettier': ['error', { 'semi': false }]
   },
@@ -68,10 +69,10 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   // axios: {
-  //   browserBaseURL:
-  //     process.env.BASE_URL ||
-  //     '',
-  //   https: true
+  //   browserBaseURL: ''
+  //   //     process.env.BASE_URL ||
+  //   //     '',
+  //   //   https: true
   // },
   /*
    ** Build configuration
