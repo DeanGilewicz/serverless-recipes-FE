@@ -1,22 +1,16 @@
 <template>
-  <div class="container">
-    <div class="w-full max-w-lg">
-      <h1>Dashboard</h1>
+  <div class="w-full">
+    <div class="max-w-lg">
+     <h1>Dashboard</h1>
     </div>
   </div>
 </template>
 
 <script>
 export default {
+  layout: 'auth',
   middleware: ['auth'],
   components: {},
-  // data() {
-  //   return {
-  //     errors: [],
-  //     username: '',
-  //     password: ''
-  //   }
-  // },
   methods: {}
 }
 </script>

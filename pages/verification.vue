@@ -101,9 +101,7 @@ export default {
         })
         .catch((e) => {
           // console.log(e)
-          this.errors.push(
-            'Username and confirmation code combination not found'
-          )
+          this.errors.push('Invalid username and confirmation code combination')
           /* eslint-disable unicorn/prefer-includes */
           // if (e.indexOf('Username/client id combination not found') > -1) {
           //   this.errors.push('Username and password combination not found')

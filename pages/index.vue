@@ -108,12 +108,24 @@ export default {
       }
       return this.$axios
         .$post('/dev/api/users/login', postData)
-        .then((data) => {
-          console.log('data', data)
-          // vuexContext.commit("method", data);
+        .then((res) => {
+          const user = {
+            emailVerified: res.user.emailVerified,
+            emailAddress: res.user.emailAddress,
+            firstName: res.user.firstName,
+            lastName: res.user.lastName
+          }
+          // save user info to store
+          this.$setAuthUser(res.user)
+          // save user info to vuex
+          this.$store.dispatch('auth/setUser', user)
+          // redirect to dashboard
+          this.$router.push('/dashboard')
         })
         .catch((e) => {
-          console.error(e)
+          // console.error(e)
+          // user not found
+          this.errors.push('Invalid username and password combination')
         })
     }
   }
