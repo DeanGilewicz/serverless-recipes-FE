@@ -119,8 +119,8 @@ export default {
           this.$setAuthUser(res.user)
           // save user info to vuex
           this.$store.dispatch('auth/setUser', user)
-          // redirect to dashboard
-          this.$router.push('/dashboard')
+          // redirect to recipes
+          this.$router.push('/recipes')
         })
         .catch((e) => {
           // console.error(e)

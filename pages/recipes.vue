@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <div class="max-w-lg">
-     <h1>Dashboard</h1>
+      <h1>Recipes</h1>
     </div>
   </div>
 </template>
@@ -11,6 +11,9 @@ export default {
   layout: 'auth',
   middleware: ['auth'],
   components: {},
+  created() {
+    // get all recipes
+  },
   methods: {}
 }
 </script>
