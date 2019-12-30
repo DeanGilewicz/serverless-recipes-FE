@@ -2,17 +2,51 @@
   <div class="w-full">
     <div class="max-w-lg">
       <h1>Recipes</h1>
+      <div v-if="recipes" class="container-recipes">
+        <div
+          v-for="recipe in recipes"
+          :key="recipe.recipeId"
+          class="container-recipe"
+        >
+          <nuxt-link :to="recipe.slug">
+            <p>{{ recipe.recipeName }}</p>
+            <p v-if="recipe.image">
+              <img :src="recipe.image" :alt="recipe.recipeName" />
+            </p>
+          </nuxt-link>
+        </div>
+      </div>
+      <nuxt-link to="/recipe-add">Add Recipe</nuxt-link>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   layout: 'auth',
   middleware: ['auth'],
   components: {},
+  computed: {
+    ...mapState('recipe', ['recipes'])
+  },
   created() {
-    // get all recipes
+    // check vuex for recipes
+    if (this.$store.getters['recipe/recipes'].length < 1) {
+      return this.$axios
+        .$get('/dev/api/recipes', {
+          headers: {
+            Authorization: this.$getAuthUserToken('idToken')
+          }
+        })
+        .then((res) => {
+          // add recipe to vuex
+          this.$store.dispatch('recipe/setRecipes', res.Items)
+        })
+        .catch((e) => {
+          // console.error(e)
+        })
+    }
   },
   methods: {}
 }

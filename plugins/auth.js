@@ -7,6 +7,18 @@ const doesUserExist = () => {
   return true
 }
 
+const isUserAuthed = () => {
+  if (doesUserExist()) {
+    const user = JSON.parse(window.localStorage.getItem('user'))
+    const expiration = user.auth.expiration
+    const timeNow = new Date().getTime()
+    if (timeNow >= expiration) {
+      return false
+    }
+    return true
+  }
+}
+
 const getUserNoAuth = () => {
   if (!window.localStorage.getItem('user')) {
     return
@@ -22,11 +34,11 @@ const setAuthUser = (user) => {
   window.localStorage.setItem('user', stringifyUser)
 }
 
-const updateAuthUserItem = (user, item) => {
+const updateAuthUserItem = (item, itemVal) => {
   if (doesUserExist()) {
     const stringifiedUser = window.localStorage.getItem('user')
     const user = JSON.parse(stringifiedUser)
-    user[item] = item
+    user.auth[item] = itemVal
     setAuthUser(user)
   }
 }
@@ -57,6 +69,7 @@ const getAuthUserToken = (item) => {
 // inject [name] is available in context $[name]
 export default ({ app }, inject) => {
   inject('doesUserExist', doesUserExist)
+  inject('isUserAuthed', isUserAuthed)
   inject('setAuthUser', setAuthUser)
   inject('getUserNoAuth', getUserNoAuth)
   inject('updateAuthUserItem', updateAuthUserItem)

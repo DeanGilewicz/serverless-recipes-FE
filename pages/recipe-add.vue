@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <div class="w-full max-w-xs">
+      <nuxt-link to="/recipes">Go to Recipes</nuxt-link>
       <form
         @submit.prevent="onSubmit"
         class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
@@ -22,89 +23,89 @@
           >
           <input
             id="recipeName"
-            name="recipeName"
             v-model="recipeName"
+            name="recipeName"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             placeholder="recipeName"
           />
         </div>
-				<div v-if="ingredients">
-					<div v-for="(ingredient, index) in ingredients" :key="index">
-						<div class="mb-4">
-							<label
-								class="block text-gray-700 text-sm font-bold mb-2"
-								for="ingredientName"
-								>Ingredient Name</label
-							>
-							<input
-								id="ingredientName"
-								name="ingredientName"
-								v-model="ingredient.name"
-								class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-								type="text"
-								placeholder="Ingredient Name"
-							/>
-						</div>
-						<div>
-							<label
-								class="block text-gray-700 text-sm font-bold mb-2"
-								for="ingredientAmount"
-								>Ingredient Amount</label
-							>
-							<input
-								id="ingredientAmount"
-								name="ingredientAmount"
-								v-model="ingredient.amount"
-								class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-								type="text"
-								placeholder="Ingredient Amount"
-							/>
-						</div>
-					</div>
-				</div>
-				<div>
-					<div class="mb-4">
-						<label
-							class="block text-gray-700 text-sm font-bold mb-2"
-							for="additionalIngredientName"
-							>Additional Ingredient Name</label
-						>
-						<input
-							id="additionalIngredientName"
-							name="additionalIngredientName"
-							v-model="additionalIngredientName"
-							class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-							type="text"
-							placeholder="Additional Ingredient Name"
-						/>
-					</div>
-					<div>
-						<label
-							class="block text-gray-700 text-sm font-bold mb-2"
-							for="additionalIngredientAmount"
-							>Additional Ingredient Amount</label
-						>
-						<input
-							id="additionalIngredientAmount"
-							name="additionalIngredientAmount"
-							v-model="additionalIngredientAmount"
-							class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-							type="text"
-							placeholder="Additional Ingredient Amount"
-						/>
-					</div>
-					<div class="flex items-center justify-between">
-						<button
-							class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-							type="button"
-							@click="addIngredient"
-						>
-							Add Ingredient
-						</button>
-					</div>
-				</div>
-				<div class="mb-4">
+        <div v-if="ingredients">
+          <div v-for="(ingredient, index) in ingredients" :key="index">
+            <div class="mb-4">
+              <label
+                class="block text-gray-700 text-sm font-bold mb-2"
+                for="ingredientName"
+                >Ingredient Name</label
+              >
+              <input
+                id="ingredientName"
+                v-model="ingredient.name"
+                name="ingredientName"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                type="text"
+                placeholder="Ingredient Name"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-gray-700 text-sm font-bold mb-2"
+                for="ingredientAmount"
+                >Ingredient Amount</label
+              >
+              <input
+                id="ingredientAmount"
+                v-model="ingredient.amount"
+                name="ingredientAmount"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                type="text"
+                placeholder="Ingredient Amount"
+              />
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="mb-4">
+            <label
+              class="block text-gray-700 text-sm font-bold mb-2"
+              for="additionalIngredientName"
+              >Additional Ingredient Name</label
+            >
+            <input
+              id="additionalIngredientName"
+              v-model="additionalIngredientName"
+              name="additionalIngredientName"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              type="text"
+              placeholder="Additional Ingredient Name"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-gray-700 text-sm font-bold mb-2"
+              for="additionalIngredientAmount"
+              >Additional Ingredient Amount</label
+            >
+            <input
+              id="additionalIngredientAmount"
+              v-model="additionalIngredientAmount"
+              name="additionalIngredientAmount"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              type="text"
+              placeholder="Additional Ingredient Amount"
+            />
+          </div>
+          <div class="flex items-center justify-between">
+            <button
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="button"
+              @click="addIngredient"
+            >
+              Add Ingredient
+            </button>
+          </div>
+        </div>
+        <div class="mb-4">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
             for="recipeInstructions"
@@ -120,12 +121,12 @@
           ></textarea>
         </div>
         <div class="flex items-center justify-between">
-					<button
-						class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-						type="submit"
-					>
-						Create Recipe
-					</button>
+          <button
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            Create Recipe
+          </button>
         </div>
       </form>
     </div>
@@ -159,7 +160,56 @@ export default {
       this.additionalIngredientAmount = ''
     },
     onSubmit() {
-      console.log('submit')
+      // plugin fns
+      const validRecipeName = this.$validTextInput(
+        'recipeName',
+        this.recipeName
+      )
+      const validRecipeInstructions = this.$validTextInput(
+        'recipeInstructions',
+        this.recipeInstructions
+      )
+      // clear errors
+      this.errors = []
+      // validate
+      if (!validRecipeName.valid) {
+        this.errors.push(validRecipeName.message)
+      }
+      if (!validRecipeInstructions.valid) {
+        this.errors.push(validRecipeInstructions.message)
+      }
+      if (this.ingredients.length < 1) {
+        this.errors.push('A recipe must have at least one ingredient')
+      }
+      // do not make network request if errors
+      if (this.errors.length > 0) {
+        return
+      }
+      // set up post data obj
+      const postData = {
+        recipeName: this.recipeName,
+        ingredients: this.ingredients,
+        instructions: this.recipeInstructions,
+        image: ''
+      }
+      return this.$axios
+        .$post('/dev/api/recipes/create', postData, {
+          headers: {
+            Authorization: this.$getAuthUserToken('idToken')
+          }
+        })
+        .then((res) => {
+          const addedRecipe = res.Item
+          // add recipe to vuex
+          this.$store.dispatch('recipe/addRecipe', addedRecipe)
+          // redirect to recipes
+          this.$router.push('/recipes')
+        })
+        .catch((e) => {
+          // console.error(e)
+          // user not found
+          this.errors.push('Unable to create recipe')
+        })
     }
   }
 }
