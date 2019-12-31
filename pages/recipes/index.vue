@@ -8,7 +8,7 @@
           :key="recipe.recipeId"
           class="container-recipe"
         >
-          <nuxt-link :to="recipe.slug">
+          <nuxt-link :to="'/recipes/' + recipe.recipeId">
             <p>{{ recipe.recipeName }}</p>
             <p v-if="recipe.image">
               <img :src="recipe.image" :alt="recipe.recipeName" />

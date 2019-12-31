@@ -7,7 +7,7 @@ export default function(context) {
       const user = context.app.$getUserNoAuth()
       context.store.dispatch('auth/setUser', user)
       // check token validity
-      console.log('WHAT', context.app.$isUserAuthed())
+      console.log('IS AUTHED', context.app.$isUserAuthed())
       if (!context.app.$isUserAuthed()) {
         return context.$axios
           .$post(

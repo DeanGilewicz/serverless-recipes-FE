@@ -8,9 +8,9 @@ export const mutations = {
   setRecipes(state, recipes) {
     state.recipes = recipes
   },
-  // setRecipe(state, recipe) {
-  //   state.recipe = recipe;
-  // },
+  setRecipe(state, recipe) {
+    state.recipe = recipe
+  },
   addRecipe(state, recipe) {
     state.recipes.push(recipe)
   }
@@ -19,6 +19,9 @@ export const mutations = {
 export const actions = {
   setRecipes(state, recipes) {
     state.commit('setRecipes', recipes)
+  },
+  setRecipe(state, recipe) {
+    state.commit('setRecipe', recipe)
   },
   addRecipe(state, recipe) {
     state.commit('addRecipe', recipe)
