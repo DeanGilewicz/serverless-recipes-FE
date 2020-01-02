@@ -14,6 +14,9 @@ export const mutations = {
   addRecipe(state, recipe) {
     state.recipes.push(recipe)
   }
+  // updateRecipe(state, recipeField, recipeFieldValue) {
+  //   state.recipe[recipeField] = recipeFieldValue
+  // }
 }
 
 export const actions = {
@@ -26,6 +29,9 @@ export const actions = {
   addRecipe(state, recipe) {
     state.commit('addRecipe', recipe)
   }
+  // updateRecipe(state, recipeField, recipeFieldValue) {
+  //   state.commit('updateRecipe', state, recipeField, recipeFieldValue)
+  // }
 }
 
 export const getters = {
