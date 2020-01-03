@@ -1,6 +1,9 @@
 <template>
   <div>
     <h1>Recipe</h1>
+    <div v-if="recipe">
+      <nuxt-link :to="'/recipes/'+this.$route.params.rid+'/edit'">Edit {{ recipe.recipeName }}</nuxt-link>
+    </div>
     <p v-if="recipe">{{ recipe.recipeName }}</p>
 		<ul v-if="recipe">
 			<li v-for="(ingredient,index) in recipe.ingredients" :key="index">
@@ -33,7 +36,7 @@ export default {
           this.$store.dispatch('recipe/setRecipe', res.Items[0])
         })
         .catch((e) => {
-          // console.error(e)
+          console.error(e)
           // Unable to get recipe
         })
     }

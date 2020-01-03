@@ -1,6 +1,25 @@
 <template>
   <div>
     <h1>Recipe</h1>
+		<!-- <form
+			@submit.prevent="onDelete"
+			class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+			action=""
+		> -->
+		<form
+			@submit.prevent="showModal = true"
+			class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+			action=""
+		>
+			<div class="flex items-center justify-between">
+				<button
+					class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+					type="submit"
+				>
+					Delete Recipe
+				</button>
+			</div>
+		</form>
 		<form
 			@submit.prevent="onSubmit"
 			class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
@@ -136,6 +155,13 @@
 			</div>
 			<div class="flex items-center justify-between">
 				<button
+					class="bg-yellow-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+					type="button"
+					@click="onCancelUpdate"
+				>
+					Cancel
+				</button>
+				<button
 					class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
 					type="submit"
 				>
@@ -143,22 +169,44 @@
 				</button>
 			</div>
 		</form>
+
+		<Modal v-if="showModal" @close="showModal = false">
+			<h3 slot="header">Delete {{updatedRecipe.recipeName}}</h3>
+			<p slot="body">Are you sure you want to delete this recipe?</p>
+			<div slot="footer">
+				<button
+					@click="showModal = false"
+					class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+				>
+					Cancel
+				</button>
+				<button
+					@click="onDelete"
+					class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+				>
+					Delete
+				</button>
+			</div>
+		</Modal>
+
 	</div>
 </template>
 
 <script>
 // import { mapGetters, mapActions } from 'vuex'
+import Modal from '@/components/Modal'
 export default {
   layout: 'auth',
   middleware: ['auth'],
-  components: {},
+  components: { Modal },
   data() {
     return {
       errors: [],
       additionalIngredientName: '',
       additionalIngredientAmount: '',
       updatedRecipe: null, // deep clone of recipe
-      key: 1
+      key: 1,
+      showModal: false
     }
   },
   created() {
@@ -172,13 +220,17 @@ export default {
           }
         })
         .then((res) => {
+          // redirect if no recipe exists
+          if (res.Items.length < 1) {
+            return this.$router.push('/recipes')
+          }
           // create copy and store as updated recipe
           this.updatedRecipe = JSON.parse(JSON.stringify(res.Items[0]))
           // add recipe to vuex
           this.$store.dispatch('recipe/setRecipe', res.Items[0])
         })
         .catch((e) => {
-          // console.error(e)
+          console.error(e)
           // Unable to get recipe
         })
     } else {
@@ -222,6 +274,11 @@ export default {
       // reset additional ingredient
       this.$refs.additionalIngredientName.value = ''
       this.$refs.additionalIngredientAmount.value = ''
+    },
+    onCancelUpdate() {
+      this.updatedRecipe = JSON.parse(
+        JSON.stringify(this.$store.getters['recipe/recipe'])
+      )
     },
     onSubmit() {
       // plugin fns
@@ -268,6 +325,30 @@ export default {
           console.error(e)
           // user not found
           this.errors.push('Unable to update recipe')
+        })
+    },
+    onDelete() {
+      const recipeId = this.$route.params.rid
+      return this.$axios
+        .$delete(`dev/api/recipes/${recipeId}/delete`, {
+          headers: {
+            Authorization: this.$getAuthUserToken('idToken')
+          }
+        })
+        .then((res) => {
+          // remove deleted recipe from vuex
+          this.$store
+            .dispatch('recipe/deleteRecipe', res.Attributes)
+            .then(() => {
+              this.showModal = false
+              this.updatedRecipe = this.$store.getters['recipe/recipe']
+              this.$router.push('/recipes')
+            })
+        })
+        .catch((e) => {
+          console.error(e)
+          // user not found
+          this.errors.push('Unable to delete recipe')
         })
     }
   }
