@@ -312,7 +312,7 @@ export default {
       }
       const recipeId = this.$route.params.rid
       return this.$axios
-        .$put(`dev/api/recipes/${recipeId}/update`, postData, {
+        .$put(`/dev/api/recipes/${recipeId}/update`, postData, {
           headers: {
             Authorization: this.$getAuthUserToken('idToken')
           }

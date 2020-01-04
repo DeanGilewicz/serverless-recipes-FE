@@ -1,10 +1,16 @@
 <template>
-	<div class="w-full ">
+	<div class="w-full">
     <div class="max-w-lg">
       <div>
 				<div v-if="this.$store.state.auth.user">
 					<span>Logged in as: {{this.$store.state.auth.user.emailAddress}}</span>
 				</div>
+        <nuxt-link
+          to="/my-account"
+          class="inline-block bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        >
+          My Account
+        </nuxt-link>
         <form
           @submit.prevent="onLogOut"
           class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
