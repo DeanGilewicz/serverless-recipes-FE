@@ -33,14 +33,18 @@ const validTextInput = (inputName, inputValue) => {
 }
 
 const validPassword = (inputName, inputValue) => {
+  inputName = inputName || 'password'
   // at least one number, one lowercase and one uppercase letter and at least six characters
   const re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/
   if (inputValue === '') {
-    return validationFailure(`Password cannot be blank`)
+    return validationFailure(
+      `${inputName.charAt(0).toUpperCase() +
+        inputName.slice(1)} cannot be blank`
+    )
   }
   if (!re.test(inputValue)) {
     return validationFailure(
-      `Please provide a password that is at least eight characters and contains at least one number, one special character, one lowercase and one uppercase letter`
+      `Please provide a ${inputName} that is at least eight characters and contains at least one number, one special character, one lowercase and one uppercase letter`
     )
   }
   return validationSuccess()

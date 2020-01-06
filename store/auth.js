@@ -8,6 +8,9 @@ export const mutations = {
   },
   deleteUser(state) {
     state.user = null
+  },
+  updateUserAttribute(state, { attr, attrValue }) {
+    state.user[attr] = attrValue
   }
 }
 
@@ -17,6 +20,9 @@ export const actions = {
   },
   deleteUser(state) {
     state.commit('deleteUser')
+  },
+  updateUserAttribute(state, { attr, attrValue }) {
+    state.commit('updateUserAttribute', { attr, attrValue })
   }
 }
 

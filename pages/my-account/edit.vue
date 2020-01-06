@@ -164,22 +164,31 @@ export default {
           // }
         ]
       }
-      console.log('POSTDATA', postData)
-      // return this.$axios
-      //   .$put('/dev/api/users/updateUser', postData, {
-      //     headers: {
-      //       Authorization: this.$getAuthUserToken('idToken')
-      //     }
-      //   })
-      //   .then((res) => {
-      //     // add recipe to vuex
-      //     this.$store.dispatch('recipe/setRecipe', res.Attributes)
-      //   })
-      //   .catch((e) => {
-      //     console.error(e)
-      //     // user not found
-      //     this.errors.push('Unable to update recipe')
-      //   })
+      return this.$axios
+        .$put('/dev/api/users/updateUser', postData, {
+          headers: {
+            Authorization: this.$getAuthUserToken('idToken')
+          }
+        })
+        .then((res) => {
+          // update user info in store
+          this.$updateUserItem('firstName', res.firstName)
+          this.$updateUserItem('lastName', res.lastName)
+          // update user in vuex
+          this.$store.dispatch('auth/updateUserAttribute', {
+            attr: 'firstName',
+            attrValue: res.firstName
+          })
+          this.$store.dispatch('auth/updateUserAttribute', {
+            attr: 'lastName',
+            attrValue: res.lastName
+          })
+        })
+        .catch((e) => {
+          console.error(e)
+          // user not found
+          this.errors.push('Unable to update user')
+        })
     },
     onDelete() {
       console.log('onDelete')

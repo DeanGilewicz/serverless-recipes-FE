@@ -43,6 +43,15 @@ const updateAuthUserItem = (item, itemVal) => {
   }
 }
 
+const updateUserItem = (item, itemVal) => {
+  if (doesUserExist()) {
+    const stringifiedUser = window.localStorage.getItem('user')
+    const user = JSON.parse(stringifiedUser)
+    user[item] = itemVal
+    setAuthUser(user)
+  }
+}
+
 const removeAuthUser = () => {
   if (doesUserExist()) {
     window.localStorage.removeItem('user')
@@ -73,6 +82,7 @@ export default ({ app }, inject) => {
   inject('setAuthUser', setAuthUser)
   inject('getUserNoAuth', getUserNoAuth)
   inject('updateAuthUserItem', updateAuthUserItem)
+  inject('updateUserItem', updateUserItem)
   inject('removeAuthUser', removeAuthUser)
   inject('getAuthUserToken', getAuthUserToken)
 }
