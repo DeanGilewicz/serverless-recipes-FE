@@ -140,6 +140,7 @@ export default {
   components: {},
   data() {
     return {
+      apiStatus: 'initial', // initial, loading, success, error
       errors: [],
       recipeName: '',
       additionalIngredientName: '',
