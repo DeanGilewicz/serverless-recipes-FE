@@ -54,4 +54,7 @@ export const getters = {
   recipe(state) {
     return state.recipe
   }
+  // recipe: (state) => (recipeId) => {
+  //   return state.recipes.find((prop) => prop.recipeId === recipeId)
+  // }
 }

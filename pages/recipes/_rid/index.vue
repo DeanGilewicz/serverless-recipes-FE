@@ -22,24 +22,23 @@ export default {
   middleware: ['auth'],
   components: {},
   created() {
-    // check vuex for this recipe - if fail then xhr request this recipe
-    if (!this.$store.getters['recipe/recipe']) {
-      // stick it in vuex store
-      return this.$axios
-        .$get('/dev/api/recipes/' + this.$route.params.rid, {
-          headers: {
-            Authorization: this.$getAuthUserToken('idToken')
-          }
-        })
-        .then((res) => {
-          // add recipe to vuex
-          this.$store.dispatch('recipe/setRecipe', res.Items[0])
-        })
-        .catch((e) => {
-          console.error(e)
-          // Unable to get recipe
-        })
-    }
+    // clear recipe so no display stale data from other recipe
+    this.$store.dispatch('recipe/setRecipe', null)
+    // xhr request when enter a single recipe
+    return this.$axios
+      .$get('/dev/api/recipes/' + this.$route.params.rid, {
+        headers: {
+          Authorization: this.$getAuthUserToken('idToken')
+        }
+      })
+      .then((res) => {
+        // add recipe to vuex
+        this.$store.dispatch('recipe/setRecipe', res.Items[0])
+      })
+      .catch((e) => {
+        console.error(e)
+        // Unable to get recipe
+      })
   },
   computed: mapState('recipe', ['recipe'])
 }

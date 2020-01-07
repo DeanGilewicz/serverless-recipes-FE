@@ -72,6 +72,13 @@
 						Cancel
 					</button>
 					<button
+						class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+						type="button"
+						@click="showModal = true"
+					>
+						Delete User
+					</button>
+					<button
 						class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
 						type="submit"
 					>
@@ -80,22 +87,42 @@
 				</div>
 			</form>
     </div>
+
+		<Modal v-if="showModal" @close="showModal = false">
+			<h3 slot="header">Delete {{user.firstName}} {{user.lastName}}</h3>
+			<p slot="body">Are you sure you want to delete this user?</p>
+			<div slot="footer">
+				<button
+					@click="showModal = false"
+					class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+				>
+					Cancel
+				</button>
+				<button
+					@click="onDeleteUser"
+					class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+				>
+					Delete
+				</button>
+			</div>
+		</Modal>
+
   </div>
 </template>
 
 <script>
 // import { mapGetters, mapActions } from 'vuex'
-// import Modal from '@/components/Modal'
+import Modal from '@/components/Modal'
 export default {
   layout: 'auth',
   middleware: ['auth'],
-  // components: { Modal },
+  components: { Modal },
   data() {
     return {
-      errors: []
+      errors: [],
       // user: null // deep clone of recipe
       // key: 1,
-      // showModal: false
+      showModal: false
     }
   },
   // created() {
@@ -190,30 +217,28 @@ export default {
           this.errors.push('Unable to update user')
         })
     },
-    onDelete() {
-      console.log('onDelete')
-      // const recipeId = this.$route.params.rid
-      // return this.$axios
-      //   .$delete(`dev/api/recipes/${recipeId}/delete`, {
-      //     headers: {
-      //       Authorization: this.$getAuthUserToken('idToken')
-      //     }
-      //   })
-      //   .then((res) => {
-      //     // remove deleted recipe from vuex
-      //     this.$store
-      //       .dispatch('recipe/deleteRecipe', res.Attributes)
-      //       .then(() => {
-      //         this.showModal = false
-      //         this.updatedRecipe = this.$store.getters['recipe/recipe']
-      //         this.$router.push('/recipes')
-      //       })
-      //   })
-      //   .catch((e) => {
-      //     console.error(e)
-      //     // user not found
-      //     this.errors.push('Unable to delete recipe')
-      //   })
+    onDeleteUser() {
+      return this.$axios
+        .$delete('/dev/api/users/deleteUser', {
+          headers: {
+            Authorization: this.$getAuthUserToken('idToken')
+          },
+          data: {
+            accessToken: this.$getAuthUserToken('accessToken')
+          }
+        })
+        .then((res) => {
+          // clear vuex
+          this.$store.dispatch('auth/deleteUser')
+          // clear storage
+          this.$removeAuthUser()
+          // redirect to home page
+          this.$router.push('/')
+        })
+        .catch((e) => {
+          console.error(e)
+          this.errors.push('Unable to delete user')
+        })
     }
   }
 }
