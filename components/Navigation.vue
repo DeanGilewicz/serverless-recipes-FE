@@ -50,7 +50,8 @@ export default {
           {},
           {
             headers: {
-              Authorization: this.$getAuthUserToken('accessToken')
+              Authorization: this.$getAuthUserToken('idToken'),
+              'X-Custom-Token': this.$getAuthUserToken('accessToken')
             }
           }
         )
