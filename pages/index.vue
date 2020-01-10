@@ -6,7 +6,7 @@
         class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
         action=""
       >
-        <div v-if="errors.length > 0" class="mb-8 text-left">
+        <div v-if="errors && errors.length > 0" class="mb-8 text-left">
           <p>Oh no, we have some errors:</p>
           <ul>
             <li v-for="(error, index) in errors" :key="index" class="list-disc">
@@ -22,8 +22,8 @@
           >
           <input
             id="username"
-            name="username"
             v-model="username"
+            name="username"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             placeholder="Username"
@@ -37,8 +37,8 @@
           >
           <input
             id="password"
-            name="password"
             v-model="password"
+            name="password"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
             type="password"
             placeholder="******"
@@ -47,10 +47,12 @@
         <div class="flex items-center justify-between">
           <div>
             <button
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              :disabled="currentState === 'pending'"
+              class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700  focus:outline-none focus:shadow-outline disabled:opacity-50"
               type="submit"
             >
-              Log In
+              <span v-if="currentState === 'tryAgain'">Try Again</span>
+              <span v-else>Log In</span>
             </button>
           </div>
           <div class="flex flex-col text-left">
@@ -70,18 +72,39 @@
         </div>
       </form>
     </div>
+    <Loader :showLoader="currentState === 'pending'" />
   </div>
 </template>
 
 <script>
+// import { mapGetters } from 'vuex'
+import Loader from '@/components/Loader'
 export default {
-  components: {},
+  components: {
+    Loader
+  },
   data() {
     return {
-      errors: [],
       username: '',
       password: ''
     }
+  },
+  // computed: mapGetters('state-machine', ['currentState']),
+  computed: {
+    currentState() {
+      return this.$store.getters['state-machine/currentState']
+    },
+    errors() {
+      return this.$store.getters['messages/errors']
+    }
+  },
+  created() {
+    // clear any errors if returning back to this template
+    if (this.$store.getters['messages/errors'].length > 0) {
+      this.$store.dispatch('messages/clearErrors')
+    }
+    // reset state machine
+    this.$store.dispatch('state-machine/setInitialState')
   },
   methods: {
     onSubmit() {
@@ -89,18 +112,20 @@ export default {
       const validUsername = this.$validEmail('Username', this.username)
       const validPassword = this.$validTextInput('Password', this.password)
       // clear errors
-      this.errors = []
+      this.$store.dispatch('messages/clearErrors')
       // validate
       if (!validUsername.valid) {
-        this.errors.push(validUsername.message)
+        this.$store.dispatch('messages/setError', validUsername.message)
       }
       if (!validPassword.valid) {
-        this.errors.push(validPassword.message)
+        this.$store.dispatch('messages/setError', validPassword.message)
       }
       // do not make network request if errors
-      if (this.errors.length > 0) {
+      if (this.$store.getters['messages/errors'].length > 0) {
         return
       }
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
         username: this.username,
@@ -115,6 +140,8 @@ export default {
             firstName: res.user.firstName,
             lastName: res.user.lastName
           }
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateSuccessState')
           // save user info to store
           this.$setAuthUser(res.user)
           // save user info to vuex
@@ -124,8 +151,13 @@ export default {
         })
         .catch((e) => {
           // console.error(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
           // user not found
-          this.errors.push('Invalid username and password combination')
+          this.$store.dispatch(
+            'messages/setError',
+            'Invalid username and password combination'
+          )
         })
     }
   }
