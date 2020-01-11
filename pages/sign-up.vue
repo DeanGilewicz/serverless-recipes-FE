@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <div class="w-full max-w-xs">
+    <div v-if="currentState === 'success'" class="w-full max-w-xs text-left p-8">
+      <span>Thanks for signing up. Please check your email to confirm your&nbsp;account.</span>
+    </div>
+    <div v-else class="w-full max-w-xs">
       <form
         @submit.prevent="onSubmit"
         class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
@@ -80,7 +83,8 @@
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
-              Sign Up
+              <span v-if="currentState === 'tryAgain'">Try Again</span>
+              <span v-else>Sign Up</span>
             </button>
           </div>
           <div class="flex flex-col text-left">
@@ -100,21 +104,40 @@
         </div>
       </form>
     </div>
+    <Loader :showLoader="currentState === 'pending'" />
   </div>
 </template>
 
 <script>
+import Loader from '@/components/Loader'
 export default {
-  components: {},
+  components: {
+    Loader
+  },
   data() {
     return {
-      errors: [],
       emailAddress: '',
       firstName: '',
       lastName: '',
       password: '',
       picture: ''
     }
+  },
+  computed: {
+    currentState() {
+      return this.$store.getters['state-machine/currentState']
+    },
+    errors() {
+      return this.$store.getters['messages/errors']
+    }
+  },
+  created() {
+    // clear any errors if returning back to this template
+    if (this.$store.getters['messages/errors'].length > 0) {
+      this.$store.dispatch('messages/clearErrors')
+    }
+    // reset state machine
+    this.$store.dispatch('state-machine/setInitialState')
   },
   methods: {
     onSubmit() {
@@ -124,24 +147,26 @@ export default {
       const validLastName = this.$validTextInput('Last Name', this.lastName)
       const validPassword = this.$validPassword('Password', this.password)
       // clear errors
-      this.errors = []
+      this.$store.dispatch('messages/clearErrors')
       // validate
       if (!validFirstName.valid) {
-        this.errors.push(validFirstName.message)
+        this.$store.dispatch('messages/setError', validFirstName.message)
       }
       if (!validLastName.valid) {
-        this.errors.push(validLastName.message)
+        this.$store.dispatch('messages/setError', validLastName.message)
       }
       if (!validEmail.valid) {
-        this.errors.push(validEmail.message)
+        this.$store.dispatch('messages/setError', validEmail.message)
       }
       if (!validPassword.valid) {
-        this.errors.push(validPassword.message)
+        this.$store.dispatch('messages/setError', validPassword.message)
       }
       // do not make network request if errors
-      if (this.errors.length > 0) {
+      if (this.$store.getters['messages/errors'].length > 0) {
         return
       }
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
         emailAddress: this.emailAddress,
@@ -153,10 +178,22 @@ export default {
       return this.$axios
         .$post('/dev/api/users/create', postData)
         .then((data) => {
-          console.log('data', data)
-          // vuexContext.commit("method", data);
+          // console.log('data', data)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateSuccessState')
+          // redirect to homepage
+          // this.$router.push('/')
         })
-        .catch((e) => console.error(e))
+        .catch((e) => {
+          // console.error(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
+          // unable to register
+          this.$store.dispatch(
+            'messages/setError',
+            'Something went wrong. Please try again'
+          )
+        })
     }
   }
 }

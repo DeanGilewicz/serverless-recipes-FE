@@ -1,6 +1,10 @@
 <template>
   <div class="container">
-    <div class="w-full max-w-xs">
+    <div v-if="currentState === 'success'" class="w-full max-w-xs text-left p-8">
+      <p>Please check your email for your confirmation code.</p>
+      <nuxt-link to="/verification">Confirmation</nuxt-link>
+    </div>
+    <div v-else class="w-full max-w-xs">
       <form
         @submit.prevent="onSubmit"
         class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
@@ -34,37 +38,60 @@
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
           >
-            Resend
+            <span v-if="currentState === 'tryAgain'">Try Again</span>
+            <span v-else>Resend</span>
           </button>
         </div>
       </form>
     </div>
+    <Loader :showLoader="currentState === 'pending'" />
   </div>
 </template>
 
 <script>
+import Loader from '@/components/Loader'
 export default {
-  components: {},
+  components: {
+    Loader
+  },
   data() {
     return {
-      errors: [],
       username: ''
     }
+  },
+  // computed: mapGetters('state-machine', ['currentState']),
+  computed: {
+    currentState() {
+      return this.$store.getters['state-machine/currentState']
+    },
+    errors() {
+      return this.$store.getters['messages/errors']
+    }
+  },
+  created() {
+    // clear any errors if returning back to this template
+    if (this.$store.getters['messages/errors'].length > 0) {
+      this.$store.dispatch('messages/clearErrors')
+    }
+    // reset state machine
+    this.$store.dispatch('state-machine/setInitialState')
   },
   methods: {
     onSubmit() {
       // plugin fns
       const validUsername = this.$validTextInput('Username', this.username)
       // clear errors
-      this.errors = []
+      this.$store.dispatch('messages/clearErrors')
       // validate
       if (!validUsername.valid) {
-        this.errors.push(validUsername.message)
+        this.$store.dispatch('messages/setError', validUsername.message)
       }
       // do not make network request if errors
-      if (this.errors.length > 0) {
+      if (this.$store.getters['messages/errors'].length > 0) {
         return
       }
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
         username: this.username
@@ -72,12 +99,16 @@ export default {
       return this.$axios
         .$post('/dev/api/users/resendConfirmation', postData)
         .then((data) => {
-          console.log('data', data)
-          // vuexContext.commit("method", data);
+          // console.log('data', data)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateSuccessState')
         })
         .catch((e) => {
-          console.log(e)
-          this.errors.push('Username not found')
+          // console.log(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
+          // user not found
+          this.$store.dispatch('messages/setError', 'Username not found')
           /* eslint-disable unicorn/prefer-includes */
           // if (e.indexOf('Username/client id combination not found') > -1) {
           //   this.errors.push('Username and password combination not found')
