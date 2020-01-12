@@ -80,6 +80,7 @@
 // import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
 export default {
+  middleware: ['reset'],
   components: {
     Loader
   },
@@ -98,14 +99,14 @@ export default {
       return this.$store.getters['messages/errors']
     }
   },
-  created() {
-    // clear any errors if returning back to this template
-    if (this.$store.getters['messages/errors'].length > 0) {
-      this.$store.dispatch('messages/clearErrors')
-    }
-    // reset state machine
-    this.$store.dispatch('state-machine/setInitialState')
-  },
+  // created() {
+  //   // clear any errors if returning back to this template
+  //   if (this.$store.getters['messages/errors'].length > 0) {
+  //     this.$store.dispatch('messages/clearErrors')
+  //   }
+  //   // reset state machine
+  //   this.$store.dispatch('state-machine/setInitialState')
+  // },
   methods: {
     onSubmit() {
       // plugin fns
@@ -141,7 +142,7 @@ export default {
             lastName: res.user.lastName
           }
           // trigger loading state
-          this.$store.dispatch('state-machine/updateSuccessState')
+          this.$store.dispatch('state-machine/updatePendingState', 'success')
           // save user info to store
           this.$setAuthUser(res.user)
           // save user info to vuex

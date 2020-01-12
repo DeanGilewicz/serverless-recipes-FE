@@ -80,6 +80,7 @@
         <div class="flex items-center justify-between">
           <div>
             <button
+              :disabled="currentState === 'pending'"
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
@@ -111,6 +112,7 @@
 <script>
 import Loader from '@/components/Loader'
 export default {
+  middleware: ['reset'],
   components: {
     Loader
   },
@@ -131,14 +133,14 @@ export default {
       return this.$store.getters['messages/errors']
     }
   },
-  created() {
-    // clear any errors if returning back to this template
-    if (this.$store.getters['messages/errors'].length > 0) {
-      this.$store.dispatch('messages/clearErrors')
-    }
-    // reset state machine
-    this.$store.dispatch('state-machine/setInitialState')
-  },
+  // created() {
+  //   // clear any errors if returning back to this template
+  //   if (this.$store.getters['messages/errors'].length > 0) {
+  //     this.$store.dispatch('messages/clearErrors')
+  //   }
+  //   // reset state machine
+  //   this.$store.dispatch('state-machine/setInitialState')
+  // },
   methods: {
     onSubmit() {
       // plugin fns
@@ -180,7 +182,7 @@ export default {
         .then((data) => {
           // console.log('data', data)
           // trigger loading state
-          this.$store.dispatch('state-machine/updateSuccessState')
+          this.$store.dispatch('state-machine/updatePendingState', 'success')
           // redirect to homepage
           // this.$router.push('/')
         })
