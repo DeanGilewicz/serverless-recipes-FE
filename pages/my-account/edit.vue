@@ -166,6 +166,9 @@ export default {
       this.$set(this.user, e.target.name, e.target.value)
     },
     onCancelUpdate() {
+      // clear errors
+      this.$store.dispatch('messages/clearErrors')
+      // reset user
       this.user = JSON.parse(JSON.stringify(this.$store.getters['auth/user']))
     },
     onCloseModal() {

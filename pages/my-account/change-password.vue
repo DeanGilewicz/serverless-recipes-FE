@@ -77,27 +77,71 @@
 				</div>
 			</form>
     </div>
+    <Loader :showLoader="currentState === 'pending'" />
+
+    <Modal v-if="showModal" @close="showModal = false">
+      <h3 v-if="currentState === 'failure'" slot="header">Oh no something went wrong</h3>
+      <p v-if="currentState === 'failure'" slot="body">We were unable to change your password</p>
+      <div v-if="currentState === 'failure'" slot="footer">
+        <button
+          @click="onCloseModal"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Close
+        </button>
+      </div>
+      <h3 v-if="currentState === 'success'" slot="header">Success</h3>
+      <p v-if="currentState === 'success'" slot="body">Your password has been updated</p>
+      <div v-if="currentState === 'success'" slot="footer">
+        <button
+          @click="onCloseModal"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Ok
+        </button>
+      </div>
+		</Modal>
+
   </div>
 </template>
 
 <script>
+import Loader from '@/components/Loader'
+import Modal from '@/components/Modal'
 export default {
   layout: 'auth',
-  middleware: ['auth'],
+  middleware: ['auth', 'reset'],
+  components: { Loader, Modal },
   data() {
     return {
-      errors: [],
       currentPassword: '',
       newPassword: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      showModal: false
+    }
+  },
+  computed: {
+    currentState() {
+      return this.$store.getters['state-machine/currentState']
+    },
+    errors() {
+      return this.$store.getters['messages/errors']
     }
   },
   methods: {
     onCancel() {
-      this.errors = []
+      // clear errors
+      this.$store.dispatch('messages/clearErrors')
+      // reset data
       this.currentPassword = ''
       this.newPassword = ''
       this.confirmPassword = ''
+    },
+    onCloseModal() {
+      // reset state machine
+      this.$store.dispatch('state-machine/setInitialState')
+      // close modal
+      this.showModal = false
     },
     onSubmit() {
       // plugin fns
@@ -114,25 +158,27 @@ export default {
         this.confirmPassword
       )
       // clear errors
-      this.errors = []
+      this.$store.dispatch('messages/clearErrors')
       // validate
       if (!validCurrentPassword.valid) {
-        this.errors.push(validCurrentPassword.message)
+        this.$store.dispatch('messages/setError', validCurrentPassword.message)
       }
       if (!validNewPassword.valid) {
-        this.errors.push(validNewPassword.message)
+        this.$store.dispatch('messages/setError', validNewPassword.message)
       }
       if (!validConfirmPassword.valid) {
-        this.errors.push(validConfirmPassword.message)
+        this.$store.dispatch('messages/setError', validConfirmPassword.message)
       }
       // exit if new password and confirm password do not match
       if (this.newPassword !== this.confirmPassword) {
-        this.errors.push('passwords do not match')
+        this.$store.dispatch('messages/setError', 'passwords do not match')
       }
       // do not make network request if errors
-      if (this.errors.length > 0) {
+      if (this.$store.getters['messages/errors'].length > 0) {
         return
       }
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
         accessToken: this.$getAuthUserToken('accessToken'),
@@ -147,12 +193,17 @@ export default {
         })
         .then((res) => {
           // not storing password anywhere - show success UI
-          console.log('PASSWORD CHANGE SUCESS')
+          // trigger loading state
+          this.$store.dispatch('state-machine/updatePendingState', 'success')
+          // show modal
+          this.showModal = true
         })
         .catch((e) => {
-          console.error(e)
+          // console.error(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
           // user not found
-          this.errors.push('Unable to change password')
+          this.$store.dispatch('messages/setError', 'Unable to change password')
         })
     }
   }
