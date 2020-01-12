@@ -87,24 +87,45 @@
 				</div>
 			</form>
     </div>
+    <Loader :showLoader="currentState === 'pending'" />
 
 		<Modal v-if="showModal" @close="showModal = false">
-			<h3 slot="header">Delete {{user.firstName}} {{user.lastName}}</h3>
-			<p slot="body">Are you sure you want to delete this user?</p>
-			<div slot="footer">
-				<button
-					@click="showModal = false"
-					class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-				>
-					Cancel
-				</button>
-				<button
-					@click="onDeleteUser"
-					class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-				>
-					Delete
-				</button>
-			</div>
+      <h3 v-if="currentState === 'failure'" slot="header">Oh no something went wrong</h3>
+      <p v-if="currentState === 'failure'" slot="body">We were unable to update {{user.firstName}} {{user.lastName}}</p>
+      <div v-if="currentState === 'failure'" slot="footer">
+        <button
+          @click="onCloseModal"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Close
+        </button>
+      </div>
+      <h3 v-if="currentState === 'success'" slot="header">Success</h3>
+      <p v-if="currentState === 'success'" slot="body">Your account has been updated</p>
+      <div v-if="currentState === 'success'" slot="footer">
+        <button
+          @click="onCloseModal"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Ok
+        </button>
+      </div>
+      <h3 v-if="currentState !== 'failure' && currentState !== 'success'" slot="header">Delete {{user.firstName}} {{user.lastName}}</h3>
+      <p v-if="currentState !== 'failure' && currentState !== 'success'" slot="body">Are you sure you want to delete this user?</p>
+      <div v-if="currentState !== 'failure' && currentState !== 'success'" slot="footer">
+        <button
+          @click="showModal = false"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Cancel
+        </button>
+        <button
+          @click="onDeleteUser"
+          class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Delete
+        </button>
+      </div>
 		</Modal>
 
   </div>
@@ -112,29 +133,30 @@
 
 <script>
 // import { mapGetters, mapActions } from 'vuex'
+import Loader from '@/components/Loader'
 import Modal from '@/components/Modal'
 export default {
   layout: 'auth',
-  middleware: ['auth'],
-  components: { Modal },
+  middleware: ['auth', 'reset'],
+  components: { Loader, Modal },
   data() {
     return {
-      errors: [],
       // user: null // deep clone of recipe
-      // key: 1,
       showModal: false
     }
   },
-  // created() {
-
-  // }
   computed: {
+    currentState() {
+      return this.$store.getters['state-machine/currentState']
+    },
+    errors() {
+      return this.$store.getters['messages/errors']
+    },
     user: {
       get() {
         return JSON.parse(JSON.stringify(this.$store.getters['auth/user']))
       },
       set(user) {
-        // console.log('user', user)
         this.$store.dispatch('auth/setUser', user)
       }
     }
@@ -145,6 +167,12 @@ export default {
     },
     onCancelUpdate() {
       this.user = JSON.parse(JSON.stringify(this.$store.getters['auth/user']))
+    },
+    onCloseModal() {
+      // reset state machine
+      this.$store.dispatch('state-machine/setInitialState')
+      // close modal
+      this.showModal = false
     },
     onSubmit() {
       // plugin fns
@@ -158,21 +186,23 @@ export default {
       //   this.user.emailAddress
       // )
       // clear errors
-      this.errors = []
+      this.$store.dispatch('messages/clearErrors')
       // validate
       if (!validFirstName.valid) {
-        this.errors.push(validFirstName.message)
+        this.$store.dispatch('messages/setError', validFirstName.message)
       }
       if (!validLastName.valid) {
-        this.errors.push(validLastName.message)
+        this.$store.dispatch('messages/setError', validLastName.message)
       }
       // if (!validEmailAddress.valid) {
-      //   this.errors.push(validEmailAddress.message)
+      //   this.$store.dispatch('messages/setError', validEmailAddress.message)
       // }
       // do not make network request if errors
-      if (this.errors.length > 0) {
+      if (this.$store.getters['messages/errors'].length > 0) {
         return
       }
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
         accessToken: this.$getAuthUserToken('accessToken'),
@@ -210,11 +240,17 @@ export default {
             attr: 'lastName',
             attrValue: res.lastName
           })
+          // trigger loading state
+          this.$store.dispatch('state-machine/updatePendingState', 'success')
+          // show modal
+          this.showModal = true
         })
         .catch((e) => {
-          console.error(e)
+          // console.error(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
           // user not found
-          this.errors.push('Unable to update user')
+          this.$store.dispatch('messages/setError', 'Unable to update user')
         })
     },
     onDeleteUser() {
@@ -228,6 +264,8 @@ export default {
           }
         })
         .then((res) => {
+          // trigger loading state
+          this.$store.dispatch('state-machine/updatePendingState', 'success')
           // clear vuex
           this.$store.dispatch('auth/deleteUser')
           // clear storage
@@ -236,8 +274,11 @@ export default {
           this.$router.push('/')
         })
         .catch((e) => {
-          console.error(e)
-          this.errors.push('Unable to delete user')
+          // console.error(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
+          // user not found
+          this.$store.dispatch('messages/setError', 'Unable to delete user')
         })
     }
   }

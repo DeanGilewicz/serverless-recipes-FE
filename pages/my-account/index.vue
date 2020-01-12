@@ -34,7 +34,7 @@
 import { mapGetters } from 'vuex'
 export default {
   layout: 'auth',
-  middleware: ['auth'],
+  middleware: ['auth', 'reset'],
   components: {},
   data() {
     return {}
