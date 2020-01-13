@@ -257,6 +257,8 @@ export default {
         })
     },
     onDeleteUser() {
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       return this.$axios
         .$delete('/dev/api/users/deleteUser', {
           headers: {

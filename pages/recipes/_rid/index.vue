@@ -12,18 +12,52 @@
 			</li>
 		</ul>
 		<p v-if="recipe">{{ recipe.instructions }}</p>
+    <Loader :showLoader="currentState === 'pending'" />
+
+    <Modal v-if="showModal" @close="showModal = false">
+      <h3 slot="header">Oh no something went wrong</h3>
+      <p slot="body">We were unable to load your recipe</p>
+      <div slot="footer">
+        <button
+          @click="onCloseModal"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Close
+        </button>
+      </div>
+		</Modal>
+
 	</div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import Loader from '@/components/Loader'
+import Modal from '@/components/Modal'
 export default {
+  name: 'recipe',
   layout: 'auth',
-  middleware: ['auth'],
-  components: {},
+  middleware: ['auth', 'reset'],
+  components: { Loader, Modal },
+  data() {
+    return {
+      showModal: false
+    }
+  },
+  computed: {
+    ...mapState('recipe', ['recipe']),
+    currentState() {
+      return this.$store.getters['state-machine/currentState']
+    },
+    errors() {
+      return this.$store.getters['messages/errors']
+    }
+  },
   created() {
     // clear recipe so no display stale data from other recipe
     this.$store.dispatch('recipe/setRecipe', null)
+    // trigger loading state
+    this.$store.dispatch('state-machine/updateInitialState')
     // xhr request when enter a single recipe
     return this.$axios
       .$get('/dev/api/recipes/' + this.$route.params.rid, {
@@ -32,15 +66,27 @@ export default {
         }
       })
       .then((res) => {
+        // trigger loading state
+        this.$store.dispatch('state-machine/updatePendingState', 'success')
         // add recipe to vuex
         this.$store.dispatch('recipe/setRecipe', res.Items[0])
       })
       .catch((e) => {
-        console.error(e)
-        // Unable to get recipe
+        // console.error(e)
+        // trigger loading state
+        this.$store.dispatch('state-machine/updateFailureState')
+        // show modal
+        this.showModal = true
       })
   },
-  computed: mapState('recipe', ['recipe'])
+  methods: {
+    onCloseModal() {
+      // reset state machine
+      this.$store.dispatch('state-machine/setInitialState')
+      // close modal
+      this.showModal = false
+    }
+  }
 }
 </script>
 

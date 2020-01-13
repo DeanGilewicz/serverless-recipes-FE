@@ -169,11 +169,32 @@
 				</button>
 			</div>
 		</form>
+		<Loader :showLoader="currentState === 'pending'" />
 
 		<Modal v-if="showModal" @close="showModal = false">
-			<h3 slot="header">Delete {{updatedRecipe.recipeName}}</h3>
-			<p slot="body">Are you sure you want to delete this recipe?</p>
-			<div slot="footer">
+			<h3 v-if="currentState === 'failure'" slot="header">Oh no something went wrong</h3>
+      <p v-if="currentState === 'failure'" slot="body">We were unable to update {{updatedRecipe.name}}</p>
+      <div v-if="currentState === 'failure'" slot="footer">
+        <button
+          @click="onCloseModal"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Close
+        </button>
+      </div>
+			<h3 v-if="currentState === 'success'" slot="header">Success</h3>
+      <p v-if="currentState === 'success'" slot="body">Your recipe has been updated</p>
+      <div v-if="currentState === 'success'" slot="footer">
+        <button
+          @click="onCloseModal"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Ok
+        </button>
+      </div>
+			<h3 v-if="currentState !== 'failure' && currentState !== 'success'" slot="header">Delete {{updatedRecipe.recipeName}}</h3>
+			<p v-if="currentState !== 'failure' && currentState !== 'success'" slot="body">Are you sure you want to delete this recipe?</p>
+			<div v-if="currentState !== 'failure' && currentState !== 'success'" slot="footer">
 				<button
 					@click="showModal = false"
 					class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -194,24 +215,46 @@
 
 <script>
 // import { mapGetters, mapActions } from 'vuex'
+import Loader from '@/components/Loader'
 import Modal from '@/components/Modal'
 export default {
+  name: 'edit-recipe',
   layout: 'auth',
-  middleware: ['auth'],
-  components: { Modal },
+  middleware: ['auth', 'reset'],
+  components: { Loader, Modal },
   data() {
     return {
-      errors: [],
       additionalIngredientName: '',
       additionalIngredientAmount: '',
       updatedRecipe: null, // deep clone of recipe
-      key: 1,
       showModal: false
     }
   },
+  computed: {
+    currentState() {
+      return this.$store.getters['state-machine/currentState']
+    },
+    errors() {
+      return this.$store.getters['messages/errors']
+    }
+  },
+  // computed: {
+  // 	recipe: {
+  // 		get() {
+  // 			return this.$store.state.recipe.recipe
+  // 		},
+  // 		set(recipe) {
+  // 			console.log(recipe)
+  // 			this.$store.commit('recipe/setRecipe', recipe)
+  // 		}
+  // 	}
+  // },
+  // computed: mapGetters('recipe', ['recipe']),
   created() {
     // check vuex for this recipe - if fail then xhr request this recipe
     if (!this.$store.getters['recipe/recipe']) {
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       // stick it in vuex store
       return this.$axios
         .$get('/dev/api/recipes/' + this.$route.params.rid, {
@@ -224,14 +267,19 @@ export default {
           if (res.Items.length < 1) {
             return this.$router.push('/recipes')
           }
+          // trigger loading state
+          this.$store.dispatch('state-machine/updatePendingState', 'success')
           // create copy and store as updated recipe
           this.updatedRecipe = JSON.parse(JSON.stringify(res.Items[0]))
           // add recipe to vuex
           this.$store.dispatch('recipe/setRecipe', res.Items[0])
         })
         .catch((e) => {
-          console.error(e)
-          // Unable to get recipe
+          // console.error(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
+          // show modal
+          this.showModal = true
         })
     } else {
       // create copy and store as updated recipe
@@ -240,18 +288,6 @@ export default {
       )
     }
   },
-  // computed: {
-  // recipe: {
-  //   get() {
-  //     return this.$store.state.recipe.recipe
-  //   },
-  //   set(recipe) {
-  //     console.log(recipe)
-  //     this.$store.commit('recipe/setRecipe', recipe)
-  //   }
-  // }
-  // },
-  // computed: mapGetters('recipe', ['recipe']),
   methods: {
     // ...mapActions('recipe', ['updateRecipe']),
     updateLocalRecipe(e) {
@@ -280,6 +316,12 @@ export default {
         JSON.stringify(this.$store.getters['recipe/recipe'])
       )
     },
+    onCloseModal() {
+      // reset state machine
+      this.$store.dispatch('state-machine/setInitialState')
+      // close modal
+      this.showModal = false
+    },
     onSubmit() {
       // plugin fns
       const validRecipeName = this.$validTextInput(
@@ -291,21 +333,29 @@ export default {
         this.updatedRecipe.instructions
       )
       // clear errors
-      this.errors = []
+      this.$store.dispatch('messages/clearErrors')
       // validate
       if (!validRecipeName.valid) {
-        this.errors.push(validRecipeName.message)
+        this.$store.dispatch('messages/setError', validRecipeName.message)
       }
       if (!validRecipeInstructions.valid) {
-        this.errors.push(validRecipeInstructions.message)
+        this.$store.dispatch(
+          'messages/setError',
+          validRecipeInstructions.message
+        )
       }
       if (this.updatedRecipe.ingredients.length < 1) {
-        this.errors.push('A recipe must have at least one ingredient')
+        this.$store.dispatch(
+          'messages/setError',
+          'A recipe must have at least one ingredient'
+        )
       }
       // do not make network request if errors
-      if (this.errors.length > 0) {
+      if (this.$store.getters['messages/errors'].length > 0) {
         return
       }
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
         ...this.updatedRecipe
@@ -320,14 +370,22 @@ export default {
         .then((res) => {
           // add recipe to vuex
           this.$store.dispatch('recipe/setRecipe', res.Attributes)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updatePendingState', 'success')
+          // show modal
+          this.showModal = true
         })
         .catch((e) => {
-          console.error(e)
+          // console.error(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
           // user not found
-          this.errors.push('Unable to update recipe')
+          this.$store.dispatch('messages/setError', 'Unable to update recipe')
         })
     },
     onDelete() {
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       const recipeId = this.$route.params.rid
       return this.$axios
         .$delete(`dev/api/recipes/${recipeId}/delete`, {
@@ -340,15 +398,22 @@ export default {
           this.$store
             .dispatch('recipe/deleteRecipe', res.Attributes)
             .then(() => {
+              // trigger loading state
+              this.$store.dispatch(
+                'state-machine/updatePendingState',
+                'success'
+              )
               this.showModal = false
               this.updatedRecipe = this.$store.getters['recipe/recipe']
               this.$router.push('/recipes')
             })
         })
         .catch((e) => {
-          console.error(e)
+          // console.error(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
           // user not found
-          this.errors.push('Unable to delete recipe')
+          this.$store.dispatch('messages/setError', 'Unable to delete recipe')
         })
     }
   }

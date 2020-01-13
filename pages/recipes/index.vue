@@ -16,23 +16,50 @@
           </nuxt-link>
         </div>
       </div>
-      <nuxt-link to="/recipe-add">Add Recipe</nuxt-link>
+      <nuxt-link to="/recipes/add">Add Recipe</nuxt-link>
     </div>
+    <Loader :showLoader="currentState === 'pending'" />
+
+    <Modal v-if="showModal" @close="showModal = false">
+      <h3 slot="header">Oh no something went wrong</h3>
+      <p slot="body">We were unable to load your recipes</p>
+      <div slot="footer">
+        <button
+          @click="onCloseModal"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Close
+        </button>
+      </div>
+		</Modal>
+
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import Loader from '@/components/Loader'
+import Modal from '@/components/Modal'
 export default {
   layout: 'auth',
-  middleware: ['auth'],
-  components: {},
+  middleware: ['auth', 'reset'],
+  components: { Loader, Modal },
+  data() {
+    return {
+      showModal: false
+    }
+  },
   computed: {
-    ...mapState('recipe', ['recipes'])
+    ...mapState('recipe', ['recipes']),
+    currentState() {
+      return this.$store.getters['state-machine/currentState']
+    }
   },
   created() {
     // check vuex for recipes
-    if (this.$store.getters['recipe/recipes'].length < 1) {
+    if (!this.$store.getters['recipe/recipes'].length > 0) {
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       return this.$axios
         .$get('/dev/api/recipes', {
           headers: {
@@ -40,15 +67,28 @@ export default {
           }
         })
         .then((res) => {
+          // trigger loading state
+          this.$store.dispatch('state-machine/updatePendingState', 'success')
           // add recipe to vuex
           this.$store.dispatch('recipe/setRecipes', res.Items)
         })
         .catch((e) => {
           // console.error(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
+          // show modal
+          this.showModal = true
         })
     }
   },
-  methods: {}
+  methods: {
+    onCloseModal() {
+      // reset state machine
+      this.$store.dispatch('state-machine/setInitialState')
+      // close modal
+      this.showModal = false
+    }
+  }
 }
 </script>
 

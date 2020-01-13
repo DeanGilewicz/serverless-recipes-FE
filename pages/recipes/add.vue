@@ -117,7 +117,7 @@
             v-model="recipeInstructions"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
-            placeholder="recipeInstructions"
+            placeholder="recipe instructions"
           ></textarea>
         </div>
         <div class="flex items-center justify-between">
@@ -130,26 +130,75 @@
         </div>
       </form>
     </div>
+    <Loader :showLoader="currentState === 'pending'" />
+
+		<Modal v-if="showModal" @close="showModal = false">
+      <h3 v-if="currentState === 'failure'" slot="header">Oh no something went wrong</h3>
+      <p v-if="currentState === 'failure'" slot="body">We were unable to create this {{recipeName}} recipe</p>
+      <div v-if="currentState === 'failure'" slot="footer">
+        <button
+          @click="onCloseModal"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Close
+        </button>
+      </div>
+      <h3 v-if="currentState === 'success'" slot="header">Success</h3>
+      <p v-if="currentState === 'success'" slot="body">Your {{recipeName}} recipe has been created</p>
+      <div v-if="currentState === 'success'" slot="footer">
+        <button
+          @click="onCloseModalSuccess"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Ok
+        </button>
+      </div>
+		</Modal>
+
   </div>
 </template>
 
 <script>
+import Loader from '@/components/Loader'
+import Modal from '@/components/Modal'
 export default {
+  name: 'recipes-add',
   layout: 'auth',
-  middleware: ['auth'],
-  components: {},
+  middleware: ['auth', 'reset'],
+  components: { Loader, Modal },
   data() {
     return {
-      apiStatus: 'initial', // initial, loading, success, error
-      errors: [],
       recipeName: '',
       additionalIngredientName: '',
       additionalIngredientAmount: '',
       ingredients: [],
-      recipeInstructions: ''
+      recipeInstructions: '',
+      showModal: false
+    }
+  },
+  computed: {
+    currentState() {
+      return this.$store.getters['state-machine/currentState']
+    },
+    errors() {
+      return this.$store.getters['messages/errors']
     }
   },
   methods: {
+    onCloseModal() {
+      // reset state machine
+      this.$store.dispatch('state-machine/setInitialState')
+      // close modal
+      this.showModal = false
+    },
+    onCloseModalSuccess() {
+      // reset state machine
+      this.$store.dispatch('state-machine/setInitialState')
+      // close modal
+      this.showModal = false
+      // redirect to recipes
+      this.$router.push('/recipes')
+    },
     addIngredient() {
       // add ingredient
       this.ingredients.push({
@@ -163,27 +212,33 @@ export default {
     onSubmit() {
       // plugin fns
       const validRecipeName = this.$validTextInput(
-        'recipeName',
+        'Recipe Name',
         this.recipeName
       )
       const validRecipeInstructions = this.$validTextInput(
-        'recipeInstructions',
+        'Recipe Instructions',
         this.recipeInstructions
       )
       // clear errors
-      this.errors = []
+      this.$store.dispatch('messages/clearErrors')
       // validate
       if (!validRecipeName.valid) {
-        this.errors.push(validRecipeName.message)
+        this.$store.dispatch('messages/setError', validRecipeName.message)
       }
       if (!validRecipeInstructions.valid) {
-        this.errors.push(validRecipeInstructions.message)
+        this.$store.dispatch(
+          'messages/setError',
+          validRecipeInstructions.message
+        )
       }
       if (this.ingredients.length < 1) {
-        this.errors.push('A recipe must have at least one ingredient')
+        this.$store.dispatch(
+          'messages/setError',
+          'A recipe must have at least one ingredient'
+        )
       }
       // do not make network request if errors
-      if (this.errors.length > 0) {
+      if (this.$store.getters['messages/errors'].length > 0) {
         return
       }
       // set up post data obj
@@ -193,6 +248,8 @@ export default {
         instructions: this.recipeInstructions,
         image: ''
       }
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       return this.$axios
         .$post('/dev/api/recipes/create', postData, {
           headers: {
@@ -203,13 +260,19 @@ export default {
           const addedRecipe = res.Item
           // add recipe to vuex
           this.$store.dispatch('recipe/addRecipe', addedRecipe)
-          // redirect to recipes
-          this.$router.push('/recipes')
+          // trigger loading state
+          this.$store.dispatch('state-machine/updatePendingState', 'success')
+          // show modal
+          this.showModal = true
         })
         .catch((e) => {
           // console.error(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
           // user not found
-          this.errors.push('Unable to create recipe')
+          this.$store.dispatch('messages/setError', 'Unable to create recipe')
+          // show modal
+          this.showModal = true
         })
     }
   }
