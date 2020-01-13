@@ -52,6 +52,7 @@
 <script>
 import Loader from '@/components/Loader'
 export default {
+  name: 'resend-verification',
   middleware: ['reset'],
   components: {
     Loader

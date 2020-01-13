@@ -33,6 +33,7 @@
 <script>
 import { mapGetters } from 'vuex'
 export default {
+  name: 'my-account',
   layout: 'auth',
   middleware: ['auth', 'reset'],
   components: {},

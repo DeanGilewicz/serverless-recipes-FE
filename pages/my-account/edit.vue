@@ -137,6 +137,7 @@
 import Loader from '@/components/Loader'
 import Modal from '@/components/Modal'
 export default {
+  name: 'edit-account',
   layout: 'auth',
   middleware: ['auth', 'reset'],
   components: { Loader, Modal },

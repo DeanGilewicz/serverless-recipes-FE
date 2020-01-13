@@ -80,6 +80,7 @@
 // import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
 export default {
+  name: 'home',
   middleware: ['reset'],
   components: {
     Loader

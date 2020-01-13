@@ -110,6 +110,7 @@
 import Loader from '@/components/Loader'
 import Modal from '@/components/Modal'
 export default {
+  name: 'change-password',
   layout: 'auth',
   middleware: ['auth', 'reset'],
   components: { Loader, Modal },

@@ -67,6 +67,7 @@
 <script>
 import Loader from '@/components/Loader'
 export default {
+  name: 'verification',
   middleware: ['reset'],
   components: {
     Loader

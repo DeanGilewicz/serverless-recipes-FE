@@ -67,6 +67,7 @@
 <script>
 import Loader from '@/components/Loader'
 export default {
+  name: 'forgot-password',
   middleware: ['reset'],
   components: {
     Loader

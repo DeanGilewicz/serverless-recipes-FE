@@ -163,7 +163,7 @@
 import Loader from '@/components/Loader'
 import Modal from '@/components/Modal'
 export default {
-  name: 'recipes-add',
+  name: 'add-recipe',
   layout: 'auth',
   middleware: ['auth', 'reset'],
   components: { Loader, Modal },
