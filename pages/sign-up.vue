@@ -1,7 +1,13 @@
 <template>
   <div class="container">
-    <div v-if="currentState === 'success'" class="w-full max-w-xs text-left p-8">
-      <span>Thanks for signing up. Please check your email to confirm your&nbsp;account.</span>
+    <div
+      v-if="currentState === 'success'"
+      class="w-full max-w-xs text-left p-8"
+    >
+      <span
+        >Thanks for signing up. Please check your email to confirm
+        your&nbsp;account.</span
+      >
     </div>
     <div v-else class="w-full max-w-xs">
       <form
@@ -145,10 +151,22 @@ export default {
   methods: {
     onSubmit() {
       // plugin fns
-      const validEmail = this.$validEmail('Email Address', this.emailAddress)
-      const validFirstName = this.$validTextInput('First Name', this.firstName)
-      const validLastName = this.$validTextInput('Last Name', this.lastName)
-      const validPassword = this.$validPassword('Password', this.password)
+      const validEmail = this.$validEmail(
+        'Email Address',
+        this.$sanitizeData(this.emailAddress)
+      )
+      const validFirstName = this.$validTextInput(
+        'First Name',
+        this.$sanitizeData(this.firstName)
+      )
+      const validLastName = this.$validTextInput(
+        'Last Name',
+        this.$sanitizeData(this.lastName)
+      )
+      const validPassword = this.$validPassword(
+        'Password',
+        this.$sanitizeData(this.password)
+      )
       // clear errors
       this.$store.dispatch('messages/clearErrors')
       // validate
@@ -172,11 +190,11 @@ export default {
       this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
-        emailAddress: this.emailAddress,
-        firstName: this.firstName,
-        lastName: this.lastName,
-        password: this.password,
-        picture: this.picture
+        emailAddress: this.$sanitizeData(this.emailAddress),
+        firstName: this.$sanitizeData(this.firstName),
+        lastName: this.$sanitizeData(this.lastName),
+        password: this.$sanitizeData(this.password),
+        picture: this.$sanitizeData(this.picture)
       }
       return this.$axios
         .$post('/dev/api/users/create', postData)

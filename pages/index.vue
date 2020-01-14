@@ -111,8 +111,14 @@ export default {
   methods: {
     onSubmit() {
       // plugin fns
-      const validUsername = this.$validEmail('Username', this.username)
-      const validPassword = this.$validTextInput('Password', this.password)
+      const validUsername = this.$validEmail(
+        'Username',
+        this.$sanitizeData(this.username)
+      )
+      const validPassword = this.$validTextInput(
+        'Password',
+        this.$sanitizeData(this.password)
+      )
       // clear errors
       this.$store.dispatch('messages/clearErrors')
       // validate
@@ -130,8 +136,8 @@ export default {
       this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
-        username: this.username,
-        password: this.password
+        username: this.$sanitizeData(this.username),
+        password: this.$sanitizeData(this.password)
       }
       return this.$axios
         .$post('/dev/api/users/login', postData)

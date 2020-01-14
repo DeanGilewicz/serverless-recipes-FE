@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <div v-if="currentState === 'success'" class="w-full max-w-xs text-left p-8">
+    <div
+      v-if="currentState === 'success'"
+      class="w-full max-w-xs text-left p-8"
+    >
       <p>Your account has been confirmed.</p>
       <nuxt-link to="/">Login</nuxt-link>
     </div>
@@ -98,10 +101,13 @@ export default {
     onSubmit() {
       console.log('here')
       // plugin fns
-      const validUsername = this.$validTextInput('Username', this.username)
+      const validUsername = this.$validTextInput(
+        'Username',
+        this.$sanitizeData(this.username)
+      )
       const validConfirmationCode = this.$validTextInput(
         'Confirmation Code',
-        this.confirmationCode
+        this.$sanitizeData(this.confirmationCode)
       )
       // clear errors
       this.$store.dispatch('messages/clearErrors')
@@ -120,8 +126,8 @@ export default {
       this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
-        username: this.username,
-        confirmationCode: this.confirmationCode
+        username: this.$sanitizeData(this.username),
+        confirmationCode: this.$sanitizeData(this.confirmationCode)
       }
       return this.$axios
         .$post('/dev/api/users/confirm', postData)

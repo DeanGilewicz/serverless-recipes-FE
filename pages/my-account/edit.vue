@@ -1,53 +1,53 @@
 <template>
   <div class="">
     <div class="">
-			<h1>My Account</h1>
-			<form
-				@submit.prevent="onSubmit"
-				class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-				action=""
-			>
-				<div v-if="errors.length > 0" class="mb-8 text-left">
-					<p>Oh no, we have some errors:</p>
-					<ul>
-						<li v-for="(error, index) in errors" :key="index" class="list-disc">
-							{{ error }}
-						</li>
-					</ul>
-				</div>
-				<div v-if="user" class="mb-4">
-					<label
-						class="block text-gray-700 text-sm font-bold mb-2"
-						for="firstName"
-						>First Name</label
-					>
-					<input
-						id="firstName"
-						:value="user.firstName"
-						@input="updateLocalUser($event)"
-						name="firstName"
-						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-						type="text"
-						placeholder="first name"
-					/>
-				</div>
-				<div v-if="user" class="mb-4">
-					<label
-						class="block text-gray-700 text-sm font-bold mb-2"
-						for="lastName"
-						>Last Name</label
-					>
-					<input
-						id="lastName"
-						:value="user.lastName"
-						@input="updateLocalUser($event)"
-						name="lastName"
-						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-						type="text"
-						placeholder="last name"
-					/>
-				</div>
-				<!-- <div v-if="user" class="mb-4">
+      <h1>My Account</h1>
+      <form
+        @submit.prevent="onSubmit"
+        class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        action=""
+      >
+        <div v-if="errors.length > 0" class="mb-8 text-left">
+          <p>Oh no, we have some errors:</p>
+          <ul>
+            <li v-for="(error, index) in errors" :key="index" class="list-disc">
+              {{ error }}
+            </li>
+          </ul>
+        </div>
+        <div v-if="user" class="mb-4">
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="firstName"
+            >First Name</label
+          >
+          <input
+            id="firstName"
+            :value="user.firstName"
+            @input="updateLocalUser($event)"
+            name="firstName"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            placeholder="first name"
+          />
+        </div>
+        <div v-if="user" class="mb-4">
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="lastName"
+            >Last Name</label
+          >
+          <input
+            id="lastName"
+            :value="user.lastName"
+            @input="updateLocalUser($event)"
+            name="lastName"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            placeholder="last name"
+          />
+        </div>
+        <!-- <div v-if="user" class="mb-4">
 					<label
 						class="block text-gray-700 text-sm font-bold mb-2"
 						for="emailAddress"
@@ -63,36 +63,40 @@
 						placeholder="email address"
 					/>
 				</div> -->
-				<div class="flex items-center justify-between">
-					<button
-						class="bg-yellow-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-						type="button"
-						@click="onCancelUpdate"
-					>
-						Cancel
-					</button>
-					<button
-						class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-						type="button"
-						@click="showModal = true"
-					>
-						Delete User
-					</button>
-					<button
+        <div class="flex items-center justify-between">
+          <button
+            class="bg-yellow-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="button"
+            @click="onCancelUpdate"
+          >
+            Cancel
+          </button>
+          <button
+            class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="button"
+            @click="showModal = true"
+          >
+            Delete User
+          </button>
+          <button
             :disabled="currentState === 'pending'"
-						class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-						type="submit"
-					>
-						Update User
-					</button>
-				</div>
-			</form>
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            Update User
+          </button>
+        </div>
+      </form>
     </div>
     <Loader :showLoader="currentState === 'pending'" />
 
-		<Modal v-if="showModal" @close="showModal = false">
-      <h3 v-if="currentState === 'failure'" slot="header">Oh no something went wrong</h3>
-      <p v-if="currentState === 'failure'" slot="body">We were unable to update {{user.firstName}} {{user.lastName}}</p>
+    <Modal v-if="showModal" @close="showModal = false">
+      <h3 v-if="currentState === 'failure'" slot="header">
+        Oh no something went wrong
+      </h3>
+      <p v-if="currentState === 'failure'" slot="body">
+        We were unable to update {{ user.firstName }} {{ user.lastName }}
+      </p>
       <div v-if="currentState === 'failure'" slot="footer">
         <button
           @click="onCloseModal"
@@ -102,7 +106,9 @@
         </button>
       </div>
       <h3 v-if="currentState === 'success'" slot="header">Success</h3>
-      <p v-if="currentState === 'success'" slot="body">Your account has been updated</p>
+      <p v-if="currentState === 'success'" slot="body">
+        Your account has been updated
+      </p>
       <div v-if="currentState === 'success'" slot="footer">
         <button
           @click="onCloseModal"
@@ -111,9 +117,22 @@
           Ok
         </button>
       </div>
-      <h3 v-if="currentState !== 'failure' && currentState !== 'success'" slot="header">Delete {{user.firstName}} {{user.lastName}}</h3>
-      <p v-if="currentState !== 'failure' && currentState !== 'success'" slot="body">Are you sure you want to delete this user?</p>
-      <div v-if="currentState !== 'failure' && currentState !== 'success'" slot="footer">
+      <h3
+        v-if="currentState !== 'failure' && currentState !== 'success'"
+        slot="header"
+      >
+        Delete {{ user.firstName }} {{ user.lastName }}
+      </h3>
+      <p
+        v-if="currentState !== 'failure' && currentState !== 'success'"
+        slot="body"
+      >
+        Are you sure you want to delete this user?
+      </p>
+      <div
+        v-if="currentState !== 'failure' && currentState !== 'success'"
+        slot="footer"
+      >
         <button
           @click="showModal = false"
           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -127,8 +146,7 @@
           Delete
         </button>
       </div>
-		</Modal>
-
+    </Modal>
   </div>
 </template>
 
@@ -165,7 +183,7 @@ export default {
   },
   methods: {
     updateLocalUser(e) {
-      this.$set(this.user, e.target.name, e.target.value)
+      this.$set(this.user, e.target.name, this.$sanitizeData(e.target.value))
     },
     onCancelUpdate() {
       // clear errors
@@ -183,9 +201,12 @@ export default {
       // plugin fns
       const validFirstName = this.$validTextInput(
         'firstName',
-        this.user.firstName
+        this.$sanitizeData(this.user.firstName)
       )
-      const validLastName = this.$validTextInput('lastName', this.user.lastName)
+      const validLastName = this.$validTextInput(
+        'lastName',
+        this.$sanitizeData(this.user.lastName)
+      )
       // const validEmailAddress = this.$validEmail(
       //   'emailAddress',
       //   this.user.emailAddress
@@ -214,11 +235,11 @@ export default {
         userAttributes: [
           {
             Name: 'name',
-            Value: this.user.firstName
+            Value: this.$sanitizeData(this.user.firstName)
           },
           {
             Name: 'family_name',
-            Value: this.user.lastName
+            Value: this.$sanitizeData(this.user.lastName)
           }
           // {
           // 	Name: "picture",

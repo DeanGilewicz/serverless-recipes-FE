@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <div v-if="currentState === 'success'" class="w-full max-w-xs text-left p-8">
+    <div
+      v-if="currentState === 'success'"
+      class="w-full max-w-xs text-left p-8"
+    >
       <p>Please check your email for your confirmation code.</p>
       <nuxt-link to="/verification">Confirmation</nuxt-link>
     </div>
@@ -82,7 +85,10 @@ export default {
   methods: {
     onSubmit() {
       // plugin fns
-      const validUsername = this.$validTextInput('Username', this.username)
+      const validUsername = this.$validTextInput(
+        'Username',
+        this.$sanitizeData(this.username)
+      )
       // clear errors
       this.$store.dispatch('messages/clearErrors')
       // validate
@@ -97,7 +103,7 @@ export default {
       this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
-        username: this.username
+        username: this.$sanitizeData(this.username)
       }
       return this.$axios
         .$post('/dev/api/users/resendConfirmation', postData)

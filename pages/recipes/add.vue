@@ -133,9 +133,13 @@
     </div>
     <Loader :showLoader="currentState === 'pending'" />
 
-		<Modal v-if="showModal" @close="showModal = false">
-      <h3 v-if="currentState === 'failure'" slot="header">Oh no something went wrong</h3>
-      <p v-if="currentState === 'failure'" slot="body">We were unable to create this {{recipeName}} recipe</p>
+    <Modal v-if="showModal" @close="showModal = false">
+      <h3 v-if="currentState === 'failure'" slot="header">
+        Oh no something went wrong
+      </h3>
+      <p v-if="currentState === 'failure'" slot="body">
+        We were unable to create this {{ recipeName }} recipe
+      </p>
       <div v-if="currentState === 'failure'" slot="footer">
         <button
           @click="onCloseModal"
@@ -145,7 +149,9 @@
         </button>
       </div>
       <h3 v-if="currentState === 'success'" slot="header">Success</h3>
-      <p v-if="currentState === 'success'" slot="body">Your {{recipeName}} recipe has been created</p>
+      <p v-if="currentState === 'success'" slot="body">
+        Your {{ recipeName }} recipe has been created
+      </p>
       <div v-if="currentState === 'success'" slot="footer">
         <button
           @click="onCloseModalSuccess"
@@ -154,8 +160,7 @@
           Ok
         </button>
       </div>
-		</Modal>
-
+    </Modal>
   </div>
 </template>
 
@@ -203,8 +208,8 @@ export default {
     addIngredient() {
       // add ingredient
       this.ingredients.push({
-        name: this.additionalIngredientName,
-        amount: this.additionalIngredientAmount
+        name: this.$sanitizeData(this.additionalIngredientName),
+        amount: this.$sanitizeData(this.additionalIngredientAmount)
       })
       // reset additional ingredient
       this.additionalIngredientName = ''
@@ -214,11 +219,11 @@ export default {
       // plugin fns
       const validRecipeName = this.$validTextInput(
         'Recipe Name',
-        this.recipeName
+        this.$sanitizeData(this.recipeName)
       )
       const validRecipeInstructions = this.$validTextInput(
         'Recipe Instructions',
-        this.recipeInstructions
+        this.$sanitizeData(this.recipeInstructions)
       )
       // clear errors
       this.$store.dispatch('messages/clearErrors')
@@ -244,9 +249,9 @@ export default {
       }
       // set up post data obj
       const postData = {
-        recipeName: this.recipeName,
-        ingredients: this.ingredients,
-        instructions: this.recipeInstructions,
+        recipeName: this.$sanitizeData(this.recipeName),
+        ingredients: this.$sanitizeData(this.ingredients),
+        instructions: this.$sanitizeData(this.recipeInstructions),
         image: ''
       }
       // trigger loading state

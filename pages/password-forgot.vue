@@ -1,7 +1,10 @@
 <template>
   <div class="container">
-    <div v-if="currentState === 'success'" class="w-full max-w-xs text-left p-8">
-      <span>Your password has been reset.<br/>Please check your email.</span>
+    <div
+      v-if="currentState === 'success'"
+      class="w-full max-w-xs text-left p-8"
+    >
+      <span>Your password has been reset.<br />Please check your email.</span>
     </div>
     <div v-else class="w-full max-w-xs">
       <form
@@ -96,7 +99,10 @@ export default {
   methods: {
     onSubmit() {
       // plugin fns
-      const validUsername = this.$validTextInput('Username', this.username)
+      const validUsername = this.$validTextInput(
+        'Username',
+        this.$sanitizeData(this.username)
+      )
       // clear errors
       this.$store.dispatch('messages/clearErrors')
       // validate
@@ -111,7 +117,7 @@ export default {
       this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
-        username: this.username
+        username: this.$sanitizeData(this.username)
       }
       return this.$axios
         .$post('/dev/api/users/forgotPassword', postData)

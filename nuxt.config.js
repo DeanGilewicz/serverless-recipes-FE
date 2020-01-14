@@ -28,7 +28,11 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['~/plugins/input-validation.js', '~/plugins/auth.js'],
+  plugins: [
+    '~/plugins/input-validation.js',
+    '~/plugins/auth.js',
+    '~/plugins/sanitize.js'
+  ],
   /*
    ** Custom linting rules
    */

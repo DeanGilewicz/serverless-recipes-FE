@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <div v-if="currentState === 'success'" class="w-full max-w-xs text-left p-8">
+    <div
+      v-if="currentState === 'success'"
+      class="w-full max-w-xs text-left p-8"
+    >
       <p>Your password has been reset.</p>
       <nuxt-link to="/">Login</nuxt-link>
     </div>
@@ -117,10 +120,16 @@ export default {
       // plugin fns
       const validConfirmationCode = this.$validTextInput(
         'Confirmation Code',
-        this.confirmationCode
+        this.$sanitizeData(this.confirmationCode)
       )
-      const validUsername = this.$validEmail('Username', this.username)
-      const validPassword = this.$validPassword('Password', this.password)
+      const validUsername = this.$validEmail(
+        'Username',
+        this.$sanitizeData(this.username)
+      )
+      const validPassword = this.$validPassword(
+        'Password',
+        this.$sanitizeData(this.password)
+      )
       // clear errors
       this.$store.dispatch('messages/clearErrors')
       // validate
@@ -141,9 +150,9 @@ export default {
       this.$store.dispatch('state-machine/updateInitialState')
       // set up post data obj
       const postData = {
-        confirmationCode: this.confirmationCode,
-        username: this.username,
-        password: this.password
+        confirmationCode: this.$sanitizeData(this.confirmationCode),
+        username: this.$sanitizeData(this.username),
+        password: this.$sanitizeData(this.password)
       }
       return this.$axios
         .$post('/dev/api/users/forgotPasswordConfirm', postData)

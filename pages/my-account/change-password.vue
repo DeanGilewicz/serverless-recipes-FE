@@ -1,88 +1,92 @@
 <template>
   <div class="">
     <div class="">
-			<h1>Change Password</h1>
-			<form
-				@submit.prevent="onSubmit"
-				class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-				action=""
-			>
-				<div v-if="errors.length > 0" class="mb-8 text-left">
-					<p>Oh no, we have some errors:</p>
-					<ul>
-						<li v-for="(error, index) in errors" :key="index" class="list-disc">
-							{{ error }}
-						</li>
-					</ul>
-				</div>
-				<div class="mb-4">
-					<label
-						class="block text-gray-700 text-sm font-bold mb-2"
-						for="currentPassword"
-						>Current Password</label
-					>
-					<input
-						id="currentPassword"
-						v-model="currentPassword"
-						name="currentPassword"
-						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-						type="password"
-						placeholder="********"
-					/>
-				</div>
-				<div class="mb-4">
-					<label
-						class="block text-gray-700 text-sm font-bold mb-2"
-						for="newPassword"
-						>New Password</label
-					>
-					<input
-						id="newPassword"
-						v-model="newPassword"
-						name="newPassword"
-						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-						type="password"
-						placeholder="********"
-					/>
-				</div>
-				<div class="mb-4">
-					<label
-						class="block text-gray-700 text-sm font-bold mb-2"
-						for="confirmPassword"
-						>Confirm Password</label
-					>
-					<input
-						id="confirmPassword"
-						v-model="confirmPassword"
-						name="confirmPassword"
-						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-						type="password"
-						placeholder="********"
-					/>
-				</div>
-				<div class="flex items-center justify-between">
-					<button
-						class="bg-yellow-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-						type="button"
-						@click="onCancel"
-					>
-						Cancel
-					</button>
-					<button
+      <h1>Change Password</h1>
+      <form
+        @submit.prevent="onSubmit"
+        class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        action=""
+      >
+        <div v-if="errors.length > 0" class="mb-8 text-left">
+          <p>Oh no, we have some errors:</p>
+          <ul>
+            <li v-for="(error, index) in errors" :key="index" class="list-disc">
+              {{ error }}
+            </li>
+          </ul>
+        </div>
+        <div class="mb-4">
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="currentPassword"
+            >Current Password</label
+          >
+          <input
+            id="currentPassword"
+            v-model="currentPassword"
+            name="currentPassword"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="password"
+            placeholder="********"
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="newPassword"
+            >New Password</label
+          >
+          <input
+            id="newPassword"
+            v-model="newPassword"
+            name="newPassword"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="password"
+            placeholder="********"
+          />
+        </div>
+        <div class="mb-4">
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="confirmPassword"
+            >Confirm Password</label
+          >
+          <input
+            id="confirmPassword"
+            v-model="confirmPassword"
+            name="confirmPassword"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="password"
+            placeholder="********"
+          />
+        </div>
+        <div class="flex items-center justify-between">
+          <button
+            class="bg-yellow-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="button"
+            @click="onCancel"
+          >
+            Cancel
+          </button>
+          <button
             :disabled="currentState === 'pending'"
-						class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-						type="submit"
-					>
-						Change Password
-					</button>
-				</div>
-			</form>
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            Change Password
+          </button>
+        </div>
+      </form>
     </div>
     <Loader :showLoader="currentState === 'pending'" />
 
     <Modal v-if="showModal" @close="showModal = false">
-      <h3 v-if="currentState === 'failure'" slot="header">Oh no something went wrong</h3>
-      <p v-if="currentState === 'failure'" slot="body">We were unable to change your password</p>
+      <h3 v-if="currentState === 'failure'" slot="header">
+        Oh no something went wrong
+      </h3>
+      <p v-if="currentState === 'failure'" slot="body">
+        We were unable to change your password
+      </p>
       <div v-if="currentState === 'failure'" slot="footer">
         <button
           @click="onCloseModal"
@@ -92,7 +96,9 @@
         </button>
       </div>
       <h3 v-if="currentState === 'success'" slot="header">Success</h3>
-      <p v-if="currentState === 'success'" slot="body">Your password has been updated</p>
+      <p v-if="currentState === 'success'" slot="body">
+        Your password has been updated
+      </p>
       <div v-if="currentState === 'success'" slot="footer">
         <button
           @click="onCloseModal"
@@ -101,8 +107,7 @@
           Ok
         </button>
       </div>
-		</Modal>
-
+    </Modal>
   </div>
 </template>
 
@@ -149,15 +154,15 @@ export default {
       // plugin fns
       const validCurrentPassword = this.$validPassword(
         'current password',
-        this.currentPassword
+        this.$sanitizeData(this.currentPassword)
       )
       const validNewPassword = this.$validPassword(
         'new password',
-        this.newPassword
+        this.$sanitizeData(this.newPassword)
       )
       const validConfirmPassword = this.$validPassword(
         'confirm password',
-        this.confirmPassword
+        this.$sanitizeData(this.confirmPassword)
       )
       // clear errors
       this.$store.dispatch('messages/clearErrors')
@@ -172,7 +177,10 @@ export default {
         this.$store.dispatch('messages/setError', validConfirmPassword.message)
       }
       // exit if new password and confirm password do not match
-      if (this.newPassword !== this.confirmPassword) {
+      if (
+        this.$sanitizeData(this.newPassword) !==
+        this.$sanitizeData(this.confirmPassword)
+      ) {
         this.$store.dispatch('messages/setError', 'passwords do not match')
       }
       // do not make network request if errors
@@ -184,8 +192,8 @@ export default {
       // set up post data obj
       const postData = {
         accessToken: this.$getAuthUserToken('accessToken'),
-        currentPassword: this.currentPassword,
-        newPassword: this.newPassword
+        currentPassword: this.$sanitizeData(this.currentPassword),
+        newPassword: this.$sanitizeData(this.newPassword)
       }
       return this.$axios
         .$post('/dev/api/users/changePassword', postData, {
