@@ -329,10 +329,16 @@ export default {
       this.$delete(ingredients, index)
     },
     addLocalRecipeIngredient() {
-      // add ingredient
+      const name = this.$refs.additionalIngredientName.value
+      const amount = this.$refs.additionalIngredientAmount.value
+      // only add ingredient if not empty
+      if (!name || !amount) {
+        return
+      }
+      // add additional ingredient
       this.updatedRecipe.ingredients.push({
-        name: this.$sanitizeData(this.$refs.additionalIngredientName.value),
-        amount: this.$sanitizeData(this.$refs.additionalIngredientAmount.value)
+        name: this.$sanitizeData(name),
+        amount: this.$sanitizeData(amount)
       })
       // reset additional ingredient
       this.$refs.additionalIngredientName.value = ''
@@ -387,29 +393,28 @@ export default {
       const postData = {
         ...this.updatedRecipe
       }
-      console.log(postData)
-      // const recipeId = this.$route.params.rid
-      // return this.$axios
-      //   .$put(`/dev/api/recipes/${recipeId}/update`, postData, {
-      //     headers: {
-      //       Authorization: this.$getAuthUserToken('idToken')
-      //     }
-      //   })
-      //   .then((res) => {
-      //     // add recipe to vuex
-      //     this.$store.dispatch('recipe/setRecipe', res.Attributes)
-      //     // trigger loading state
-      //     this.$store.dispatch('state-machine/updatePendingState', 'success')
-      //     // show modal
-      //     this.showModal = true
-      //   })
-      //   .catch((e) => {
-      //     // console.error(e)
-      //     // trigger loading state
-      //     this.$store.dispatch('state-machine/updateFailureState')
-      //     // user not found
-      //     this.$store.dispatch('messages/setError', 'Unable to update recipe')
-      //   })
+      const recipeId = this.$route.params.rid
+      return this.$axios
+        .$put(`/dev/api/recipes/${recipeId}/update`, postData, {
+          headers: {
+            Authorization: this.$getAuthUserToken('idToken')
+          }
+        })
+        .then((res) => {
+          // add recipe to vuex
+          this.$store.dispatch('recipe/setRecipe', res.Attributes)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updatePendingState', 'success')
+          // show modal
+          this.showModal = true
+        })
+        .catch((e) => {
+          // console.error(e)
+          // trigger loading state
+          this.$store.dispatch('state-machine/updateFailureState')
+          // user not found
+          this.$store.dispatch('messages/setError', 'Unable to update recipe')
+        })
     },
     onDelete() {
       // trigger loading state

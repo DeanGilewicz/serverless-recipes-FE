@@ -99,7 +99,6 @@ export default {
   // },
   methods: {
     onSubmit() {
-      console.log('here')
       // plugin fns
       const validUsername = this.$validTextInput(
         'Username',

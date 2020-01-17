@@ -4,10 +4,11 @@
       v-if="currentState === 'success'"
       class="w-full max-w-xs text-left p-8"
     >
-      <span
-        >Thanks for signing up. Please check your email to confirm
-        your&nbsp;account.</span
-      >
+      <p>
+        Thanks for signing up. Please check your email to confirm
+        your&nbsp;account.
+      </p>
+      <nuxt-link to="/">Login</nuxt-link>
     </div>
     <div v-else class="w-full max-w-xs">
       <form
