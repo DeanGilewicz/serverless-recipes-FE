@@ -2,16 +2,18 @@
   <div>
     <h1>Recipe</h1>
     <div v-if="recipe">
-      <nuxt-link :to="'/recipes/'+this.$route.params.rid+'/edit'">Edit {{ recipe.recipeName }}</nuxt-link>
+      <nuxt-link :to="'/recipes/' + this.$route.params.rid + '/edit'"
+        >Edit {{ recipe.recipeName }}</nuxt-link
+      >
     </div>
     <p v-if="recipe">{{ recipe.recipeName }}</p>
-		<ul v-if="recipe">
-			<li v-for="(ingredient,index) in recipe.ingredients" :key="index">
-				<span>{{ingredient.amount}}</span>
-				<span>{{ingredient.name}}</span>
-			</li>
-		</ul>
-		<p v-if="recipe">{{ recipe.instructions }}</p>
+    <ul v-if="recipe">
+      <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
+        <span>{{ ingredient.amount }}</span>
+        <span>{{ ingredient.name }}</span>
+      </li>
+    </ul>
+    <p v-if="recipe">{{ recipe.instructions }}</p>
     <Loader :showLoader="currentState === 'pending'" />
 
     <Modal v-if="showModal" @close="showModal = false">
@@ -25,9 +27,8 @@
           Close
         </button>
       </div>
-		</Modal>
-
-	</div>
+    </Modal>
+  </div>
 </template>
 
 <script>
@@ -66,6 +67,10 @@ export default {
         }
       })
       .then((res) => {
+        // redirect if no recipe exists
+        if (res.Items.length < 1) {
+          return this.$router.push('/recipes')
+        }
         // trigger loading state
         this.$store.dispatch('state-machine/updatePendingState', 'success')
         // add recipe to vuex
