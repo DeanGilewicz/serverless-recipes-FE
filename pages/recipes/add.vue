@@ -62,6 +62,15 @@
                 placeholder="Ingredient Amount"
               />
             </div>
+            <div class="flex items-center justify-between">
+              <button
+                class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="button"
+                @click="deleteLocalRecipeIngredient($event, index)"
+              >
+                Delete Ingredient
+              </button>
+            </div>
           </div>
         </div>
         <div>
@@ -99,7 +108,7 @@
             <button
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
-              @click="addIngredient"
+              @click="addLocalIngredient"
             >
               Add Ingredient
             </button>
@@ -214,7 +223,18 @@ export default {
       // redirect to recipes
       this.$router.push('/recipes')
     },
-    addIngredient() {
+    deleteLocalRecipeIngredient(e, index) {
+      const ingredients = this.ingredients
+      this.$delete(ingredients, index)
+    },
+    addLocalIngredient() {
+      const name = this.additionalIngredientName
+      const amount = this.additionalIngredientAmount
+      // only add ingredient if not empty
+      console.log(name, amount)
+      if (!name || !amount) {
+        return
+      }
       // add ingredient
       this.ingredients.push({
         name: this.$sanitizeData(this.additionalIngredientName),

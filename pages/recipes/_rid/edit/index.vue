@@ -177,13 +177,22 @@
     <Loader :showLoader="currentState === 'pending'" />
 
     <Modal v-if="showModal" @close="showModal = false">
-      <h3 v-if="currentState === 'failure'" slot="header">
+      <h3
+        v-if="currentState === 'failure' || currentState === 'tryAgain'"
+        slot="header"
+      >
         Oh no something went wrong
       </h3>
-      <p v-if="currentState === 'failure'" slot="body">
+      <p
+        v-if="currentState === 'failure' || currentState === 'tryAgain'"
+        slot="body"
+      >
         We were unable to update {{ updatedRecipe.name }}
       </p>
-      <div v-if="currentState === 'failure'" slot="footer">
+      <div
+        v-if="currentState === 'failure' || currentState === 'tryAgain'"
+        slot="footer"
+      >
         <button
           @click="onCloseModal"
           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -332,6 +341,7 @@ export default {
       const name = this.$refs.additionalIngredientName.value
       const amount = this.$refs.additionalIngredientAmount.value
       // only add ingredient if not empty
+      console.log(name, amount)
       if (!name || !amount) {
         return
       }
