@@ -61,25 +61,11 @@ export default {
     if (!this.$store.getters['recipe/recipes'].length > 0) {
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      return this.$axios
-        .$get('/dev/api/recipes', {
-          headers: {
-            Authorization: this.$getAuthUserToken('idToken')
-          }
-        })
-        .then((res) => {
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
-          // add recipe to vuex
-          this.$store.dispatch('recipe/setRecipes', res.Items)
-        })
-        .catch((e) => {
-          // console.error(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // show modal
-          this.showModal = true
-        })
+      // xhr get recipes
+      this.$store.dispatch('recipe/getRecipes').catch((e) => {
+        // show modal
+        this.showModal = true
+      })
     }
   },
   methods: {

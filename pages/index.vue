@@ -77,7 +77,6 @@
 </template>
 
 <script>
-// import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
 export default {
   name: 'home',
@@ -91,7 +90,6 @@ export default {
       password: ''
     }
   },
-  // computed: mapGetters('state-machine', ['currentState']),
   computed: {
     currentState() {
       return this.$store.getters['state-machine/currentState']
@@ -100,14 +98,6 @@ export default {
       return this.$store.getters['messages/errors']
     }
   },
-  // created() {
-  //   // clear any errors if returning back to this template
-  //   if (this.$store.getters['messages/errors'].length > 0) {
-  //     this.$store.dispatch('messages/clearErrors')
-  //   }
-  //   // reset state machine
-  //   this.$store.dispatch('state-machine/setInitialState')
-  // },
   methods: {
     onSubmit() {
       // plugin fns
@@ -134,39 +124,18 @@ export default {
       }
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      // set up post data obj
+      // construct post data obj
       const postData = {
         username: this.$sanitizeData(this.username),
         password: this.$sanitizeData(this.password)
       }
-      return this.$axios
-        .$post('/dev/api/users/login', postData)
-        .then((res) => {
-          const user = {
-            emailVerified: res.user.emailVerified,
-            emailAddress: res.user.emailAddress,
-            firstName: res.user.firstName,
-            lastName: res.user.lastName
-          }
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
-          // save user info to store
-          this.$setAuthUser(res.user)
-          // save user info to vuex
-          this.$store.dispatch('auth/setUser', user)
-          // redirect to recipes
-          this.$router.push('/recipes')
-        })
-        .catch((e) => {
-          // console.error(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // user not found
-          this.$store.dispatch(
-            'messages/setError',
-            'Invalid username and password combination'
-          )
-        })
+      // xhr login
+      this.$store.dispatch('auth/login', postData).then((user) => {
+        // set user
+        this.$setAuthUser(user)
+        // redirect to recipes
+        this.$router.push('/recipes')
+      })
     }
   }
 }

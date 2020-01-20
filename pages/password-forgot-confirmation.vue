@@ -107,14 +107,6 @@ export default {
       return this.$store.getters['messages/errors']
     }
   },
-  // created() {
-  //   // clear any errors if returning back to this template
-  //   if (this.$store.getters['messages/errors'].length > 0) {
-  //     this.$store.dispatch('messages/clearErrors')
-  //   }
-  //   // reset state machine
-  //   this.$store.dispatch('state-machine/setInitialState')
-  // },
   methods: {
     onSubmit() {
       // plugin fns
@@ -148,29 +140,14 @@ export default {
       }
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      // set up post data obj
+      // construct post data obj
       const postData = {
         confirmationCode: this.$sanitizeData(this.confirmationCode),
         username: this.$sanitizeData(this.username),
         password: this.$sanitizeData(this.password)
       }
-      return this.$axios
-        .$post('/dev/api/users/forgotPasswordConfirm', postData)
-        .then((data) => {
-          // console.log('data', data)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
-        })
-        .catch((e) => {
-          // console.error(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // user not found
-          this.$store.dispatch(
-            'messages/setError',
-            'Invalid code and username combination'
-          )
-        })
+      // xhr password confirmation
+      this.$store.dispatch('auth/forgotPasswordConfirm', postData)
     }
   }
 }

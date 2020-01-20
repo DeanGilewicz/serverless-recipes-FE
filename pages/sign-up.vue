@@ -141,14 +141,6 @@ export default {
       return this.$store.getters['messages/errors']
     }
   },
-  // created() {
-  //   // clear any errors if returning back to this template
-  //   if (this.$store.getters['messages/errors'].length > 0) {
-  //     this.$store.dispatch('messages/clearErrors')
-  //   }
-  //   // reset state machine
-  //   this.$store.dispatch('state-machine/setInitialState')
-  // },
   methods: {
     onSubmit() {
       // plugin fns
@@ -189,7 +181,7 @@ export default {
       }
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      // set up post data obj
+      // construct post data obj
       const postData = {
         emailAddress: this.$sanitizeData(this.emailAddress),
         firstName: this.$sanitizeData(this.firstName),
@@ -197,25 +189,8 @@ export default {
         password: this.$sanitizeData(this.password),
         picture: this.$sanitizeData(this.picture)
       }
-      return this.$axios
-        .$post('/dev/api/users/create', postData)
-        .then((data) => {
-          // console.log('data', data)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
-          // redirect to homepage
-          // this.$router.push('/')
-        })
-        .catch((e) => {
-          // console.error(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // unable to register
-          this.$store.dispatch(
-            'messages/setError',
-            'Something went wrong. Please try again'
-          )
-        })
+      // xhr sign up
+      this.$store.dispatch('auth/signUp', postData)
     }
   }
 }

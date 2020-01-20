@@ -59,27 +59,13 @@ export default {
     this.$store.dispatch('recipe/setRecipe', null)
     // trigger loading state
     this.$store.dispatch('state-machine/updateInitialState')
-    // xhr request when enter a single recipe
-    return this.$axios
-      .$get('/dev/api/recipes/' + this.$route.params.rid, {
-        headers: {
-          Authorization: this.$getAuthUserToken('idToken')
-        }
-      })
-      .then((res) => {
-        // redirect if no recipe exists
-        if (res.Items.length < 1) {
+    // xhr request to get recipe
+    this.$store
+      .dispatch('recipe/getRecipe', this.$route.params.rid)
+      .catch((e) => {
+        if (e.message === 'No recipe exists') {
           return this.$router.push('/recipes')
         }
-        // trigger loading state
-        this.$store.dispatch('state-machine/updatePendingState', 'success')
-        // add recipe to vuex
-        this.$store.dispatch('recipe/setRecipe', res.Items[0])
-      })
-      .catch((e) => {
-        // console.error(e)
-        // trigger loading state
-        this.$store.dispatch('state-machine/updateFailureState')
         // show modal
         this.showModal = true
       })

@@ -88,14 +88,6 @@ export default {
       return this.$store.getters['messages/errors']
     }
   },
-  // created() {
-  //   // clear any errors if returning back to this template
-  //   if (this.$store.getters['messages/errors'].length > 0) {
-  //     this.$store.dispatch('messages/clearErrors')
-  //   }
-  //   // reset state machine
-  //   this.$store.dispatch('state-machine/setInitialState')
-  // },
   methods: {
     onSubmit() {
       // plugin fns
@@ -115,24 +107,12 @@ export default {
       }
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      // set up post data obj
+      // construct post data obj
       const postData = {
         username: this.$sanitizeData(this.username)
       }
-      return this.$axios
-        .$post('/dev/api/users/forgotPassword', postData)
-        .then((data) => {
-          // console.log('data', data)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
-        })
-        .catch((e) => {
-          // console.log(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // user not found
-          this.$store.dispatch('messages/setError', 'Invalid username')
-        })
+      // xhr forgot password
+      this.$store.dispatch('auth/forgotPassword', postData)
     }
   }
 }

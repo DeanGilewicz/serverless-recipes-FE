@@ -276,7 +276,7 @@ export default {
       if (this.$store.getters['messages/errors'].length > 0) {
         return
       }
-      // set up post data obj
+      // construct post data obj
       const postData = {
         recipeName: this.$sanitizeData(this.recipeName),
         ingredients: this.ingredients, // sanitize handled when ingredient created
@@ -285,27 +285,14 @@ export default {
       }
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      return this.$axios
-        .$post('/dev/api/recipes/create', postData, {
-          headers: {
-            Authorization: this.$getAuthUserToken('idToken')
-          }
-        })
+      // xhr create recipe
+      this.$store
+        .dispatch('auth/createRecipe', postData)
         .then((res) => {
-          const addedRecipe = res.Item
-          // add recipe to vuex
-          this.$store.dispatch('recipe/addRecipe', addedRecipe)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
           // show modal
           this.showModal = true
         })
         .catch((e) => {
-          // console.error(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // user not found
-          this.$store.dispatch('messages/setError', 'Unable to create recipe')
           // show modal
           this.showModal = true
         })

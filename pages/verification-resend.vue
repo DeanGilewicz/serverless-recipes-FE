@@ -74,14 +74,6 @@ export default {
       return this.$store.getters['messages/errors']
     }
   },
-  // created() {
-  //   // clear any errors if returning back to this template
-  //   if (this.$store.getters['messages/errors'].length > 0) {
-  //     this.$store.dispatch('messages/clearErrors')
-  //   }
-  //   // reset state machine
-  //   this.$store.dispatch('state-machine/setInitialState')
-  // },
   methods: {
     onSubmit() {
       // plugin fns
@@ -101,28 +93,12 @@ export default {
       }
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      // set up post data obj
+      // construct post data obj
       const postData = {
         username: this.$sanitizeData(this.username)
       }
-      return this.$axios
-        .$post('/dev/api/users/resendConfirmation', postData)
-        .then((data) => {
-          // console.log('data', data)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
-        })
-        .catch((e) => {
-          // console.log(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // user not found
-          this.$store.dispatch('messages/setError', 'Username not found')
-          /* eslint-disable unicorn/prefer-includes */
-          // if (e.indexOf('Username/client id combination not found') > -1) {
-          //   this.errors.push('Username and password combination not found')
-          // }
-        })
+      // xhr resend confirmation
+      this.$store.dispatch('auth/resendConfirmation', postData)
     }
   }
 }

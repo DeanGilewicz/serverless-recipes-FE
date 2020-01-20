@@ -198,32 +198,17 @@ export default {
       }
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      // set up post data obj
+      // construct post data obj
       const postData = {
         accessToken: this.$getAuthUserToken('accessToken'),
         currentPassword: this.$sanitizeData(this.currentPassword),
         newPassword: this.$sanitizeData(this.newPassword)
       }
-      return this.$axios
-        .$post('/dev/api/users/changePassword', postData, {
-          headers: {
-            Authorization: this.$getAuthUserToken('idToken')
-          }
-        })
-        .then((res) => {
-          // not storing password anywhere - show success UI
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
-          // show modal
-          this.showModal = true
-        })
-        .catch((e) => {
-          // console.error(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // user not found
-          this.$store.dispatch('messages/setError', 'Unable to change password')
-        })
+      // xhr change password
+      this.$store.dispatch('auth/changePassword', postData).then((res) => {
+        // show modal
+        this.showModal = true
+      })
     }
   }
 }

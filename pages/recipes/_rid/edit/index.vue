@@ -270,46 +270,21 @@ export default {
       return this.$store.getters['messages/errors']
     }
   },
-  // computed: {
-  // 	recipe: {
-  // 		get() {
-  // 			return this.$store.state.recipe.recipe
-  // 		},
-  // 		set(recipe) {
-  // 			console.log(recipe)
-  // 			this.$store.commit('recipe/setRecipe', recipe)
-  // 		}
-  // 	}
-  // },
-  // computed: mapGetters('recipe', ['recipe']),
   created() {
     // check vuex for this recipe - if fail then xhr request this recipe
     if (!this.$store.getters['recipe/recipe']) {
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      // stick it in vuex store
-      return this.$axios
-        .$get('/dev/api/recipes/' + this.$route.params.rid, {
-          headers: {
-            Authorization: this.$getAuthUserToken('idToken')
-          }
-        })
-        .then((res) => {
-          // redirect if no recipe exists
-          if (res.Items.length < 1) {
-            return this.$router.push('/recipes')
-          }
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
-          // create copy and store as updated recipe
-          this.updatedRecipe = JSON.parse(JSON.stringify(res.Items[0]))
-          // add recipe to vuex
-          this.$store.dispatch('recipe/setRecipe', res.Items[0])
+      // xhr request to get recipe
+      this.$store
+        .dispatch('recipe/getRecipe', this.$route.params.rid)
+        .then((recipe) => {
+          this.updatedRecipe = JSON.parse(JSON.stringify(recipe))
         })
         .catch((e) => {
-          // console.error(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
+          if (e.message === 'No recipe exists') {
+            return this.$router.push('/recipes')
+          }
           // show modal
           this.showModal = true
         })
@@ -399,64 +374,30 @@ export default {
       }
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      // set up post data obj
+      // construct post data obj
       const postData = {
+        recipeId: this.$route.params.rid,
         ...this.updatedRecipe
       }
-      const recipeId = this.$route.params.rid
-      return this.$axios
-        .$put(`/dev/api/recipes/${recipeId}/update`, postData, {
-          headers: {
-            Authorization: this.$getAuthUserToken('idToken')
-          }
-        })
-        .then((res) => {
-          // add recipe to vuex
-          this.$store.dispatch('recipe/setRecipe', res.Attributes)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
-          // show modal
-          this.showModal = true
-        })
-        .catch((e) => {
-          // console.error(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // user not found
-          this.$store.dispatch('messages/setError', 'Unable to update recipe')
-        })
+      // xhr update recipe
+      this.$store.dispatch('recipe/updateRecipe', postData).then((res) => {
+        // show modal
+        this.showModal = true
+      })
     },
     onDelete() {
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      const recipeId = this.$route.params.rid
-      return this.$axios
-        .$delete(`dev/api/recipes/${recipeId}/delete`, {
-          headers: {
-            Authorization: this.$getAuthUserToken('idToken')
-          }
-        })
+      // xhr delete recipe
+      this.$store
+        .dispatch('recipe/deleteRecipe', this.$route.params.rid)
         .then((res) => {
-          // remove deleted recipe from vuex
-          this.$store
-            .dispatch('recipe/deleteRecipe', res.Attributes)
-            .then(() => {
-              // trigger loading state
-              this.$store.dispatch(
-                'state-machine/updatePendingState',
-                'success'
-              )
-              this.showModal = false
-              this.updatedRecipe = this.$store.getters['recipe/recipe']
-              this.$router.push('/recipes')
-            })
-        })
-        .catch((e) => {
-          // console.error(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // user not found
-          this.$store.dispatch('messages/setError', 'Unable to delete recipe')
+          // remove recipe
+          this.updatedRecipe = this.$store.getters['recipe/recipe']
+          // close modal
+          this.showModal = false
+          // return to recipe page
+          this.$router.push('/recipes')
         })
     }
   }

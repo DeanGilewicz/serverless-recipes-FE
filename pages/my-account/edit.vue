@@ -47,22 +47,6 @@
             placeholder="last name"
           />
         </div>
-        <!-- <div v-if="user" class="mb-4">
-					<label
-						class="block text-gray-700 text-sm font-bold mb-2"
-						for="emailAddress"
-						>Email Address</label
-					>
-					<input
-						id="emailAddress"
-						:value="user.emailAddress"
-						@input="updateLocalUser($event)"
-						name="emailAddress"
-						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-						type="text"
-						placeholder="email address"
-					/>
-				</div> -->
         <div class="flex items-center justify-between">
           <button
             class="bg-yellow-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -216,10 +200,6 @@ export default {
         'lastName',
         this.$sanitizeData(this.user.lastName)
       )
-      // const validEmailAddress = this.$validEmail(
-      //   'emailAddress',
-      //   this.user.emailAddress
-      // )
       // clear errors
       this.$store.dispatch('messages/clearErrors')
       // validate
@@ -229,16 +209,13 @@ export default {
       if (!validLastName.valid) {
         this.$store.dispatch('messages/setError', validLastName.message)
       }
-      // if (!validEmailAddress.valid) {
-      //   this.$store.dispatch('messages/setError', validEmailAddress.message)
-      // }
       // do not make network request if errors
       if (this.$store.getters['messages/errors'].length > 0) {
         return
       }
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      // set up post data obj
+      // construct post data obj
       const postData = {
         accessToken: this.$getAuthUserToken('accessToken'),
         userAttributes: [
@@ -256,67 +233,20 @@ export default {
           // }
         ]
       }
-      return this.$axios
-        .$put('/dev/api/users/updateUser', postData, {
-          headers: {
-            Authorization: this.$getAuthUserToken('idToken')
-          }
-        })
-        .then((res) => {
-          // update user info in store
-          this.$updateUserItem('firstName', res.firstName)
-          this.$updateUserItem('lastName', res.lastName)
-          // update user in vuex
-          this.$store.dispatch('auth/updateUserAttribute', {
-            attr: 'firstName',
-            attrValue: res.firstName
-          })
-          this.$store.dispatch('auth/updateUserAttribute', {
-            attr: 'lastName',
-            attrValue: res.lastName
-          })
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
-          // show modal
-          this.showModal = true
-        })
-        .catch((e) => {
-          // console.error(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // user not found
-          this.$store.dispatch('messages/setError', 'Unable to update user')
-        })
+      // xhr update user
+      this.$store.dispatch('auth/updateUser', postData).then((res) => {
+        // show modal
+        this.showModal = true
+      })
     },
     onDeleteUser() {
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
-      return this.$axios
-        .$delete('/dev/api/users/deleteUser', {
-          headers: {
-            Authorization: this.$getAuthUserToken('idToken')
-          },
-          data: {
-            accessToken: this.$getAuthUserToken('accessToken')
-          }
-        })
-        .then((res) => {
-          // trigger loading state
-          this.$store.dispatch('state-machine/updatePendingState', 'success')
-          // clear vuex
-          this.$store.dispatch('auth/deleteUser')
-          // clear storage
-          this.$removeAuthUser()
-          // redirect to home page
-          this.$router.push('/')
-        })
-        .catch((e) => {
-          // console.error(e)
-          // trigger loading state
-          this.$store.dispatch('state-machine/updateFailureState')
-          // user not found
-          this.$store.dispatch('messages/setError', 'Unable to delete user')
-        })
+      // xhr delete user
+      this.$store.dispatch('auth/deleteUser').then((res) => {
+        // redirect to home page
+        this.$router.push('/')
+      })
     }
   }
 }
