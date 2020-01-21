@@ -53,9 +53,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
 export default {
-  name: 'resend-verification',
+  name: 'ResendVerification',
   middleware: ['reset'],
   components: {
     Loader
@@ -65,14 +66,11 @@ export default {
       username: ''
     }
   },
-  // computed: mapGetters('state-machine', ['currentState']),
   computed: {
-    currentState() {
-      return this.$store.getters['state-machine/currentState']
-    },
-    errors() {
-      return this.$store.getters['messages/errors']
-    }
+    ...mapGetters({
+      currentState: 'state-machine/currentState',
+      errors: 'messages/errors'
+    })
   },
   methods: {
     onSubmit() {

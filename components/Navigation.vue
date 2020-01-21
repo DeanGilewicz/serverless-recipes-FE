@@ -38,7 +38,7 @@
 
 <script>
 export default {
-  name: 'navigation',
+  name: 'Navigation',
   data() {
     return {
       errorMsg: ''

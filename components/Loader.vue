@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'loader',
+  name: 'Loader',
   props: {
     showLoader: {
       type: Boolean,

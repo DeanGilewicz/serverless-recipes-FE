@@ -29,8 +29,8 @@
           >
           <input
             id="confirmationCode"
-            name="confirmationCode"
             v-model="confirmationCode"
+            name="confirmationCode"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             placeholder="Confirmation Code"
@@ -44,8 +44,8 @@
           >
           <input
             id="username"
-            name="username"
             v-model="username"
+            name="username"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             placeholder="Username"
@@ -59,8 +59,8 @@
           >
           <input
             id="password"
-            name="password"
             v-model="password"
+            name="password"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
             type="password"
             placeholder="******"
@@ -85,9 +85,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
 export default {
-  name: 'forgot-password-confirmation',
+  name: 'ForgotPasswordConfirmation',
   middleware: ['reset'],
   components: {
     Loader
@@ -100,12 +101,10 @@ export default {
     }
   },
   computed: {
-    currentState() {
-      return this.$store.getters['state-machine/currentState']
-    },
-    errors() {
-      return this.$store.getters['messages/errors']
-    }
+    ...mapGetters({
+      currentState: 'state-machine/currentState',
+      errors: 'messages/errors'
+    })
   },
   methods: {
     onSubmit() {

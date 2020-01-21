@@ -36,7 +36,7 @@ import { mapState } from 'vuex'
 import Loader from '@/components/Loader'
 import Modal from '@/components/Modal'
 export default {
-  name: 'recipe',
+  name: 'Recipe',
   layout: 'auth',
   middleware: ['auth', 'reset'],
   components: { Loader, Modal },

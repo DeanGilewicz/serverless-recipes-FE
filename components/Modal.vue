@@ -20,7 +20,7 @@
           <div class="modal-footer">
             <slot name="footer">
               default footer
-              <button class="modal-default-button" @click="$emit('close')">
+              <button @click="$emit('close')" class="modal-default-button">
                 Close
               </button>
             </slot>
@@ -34,7 +34,7 @@
 
 <script>
 export default {
-  name: 'modal'
+  name: 'Modal'
 }
 </script>
 

@@ -29,8 +29,8 @@
           >
           <input
             id="username"
-            name="username"
             v-model="username"
+            name="username"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             placeholder="Username"
@@ -44,8 +44,8 @@
           >
           <input
             id="confirmation-code"
-            name="confirmation-code"
             v-model="confirmationCode"
+            name="confirmation-code"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
             type="password"
             placeholder="******"
@@ -68,9 +68,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
 export default {
-  name: 'verification',
+  name: 'Verification',
   middleware: ['reset'],
   components: {
     Loader
@@ -82,12 +83,10 @@ export default {
     }
   },
   computed: {
-    currentState() {
-      return this.$store.getters['state-machine/currentState']
-    },
-    errors() {
-      return this.$store.getters['messages/errors']
-    }
+    ...mapGetters({
+      currentState: 'state-machine/currentState',
+      errors: 'messages/errors'
+    })
   },
   methods: {
     onSubmit() {

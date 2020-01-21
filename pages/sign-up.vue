@@ -32,8 +32,8 @@
           >
           <input
             id="firstName"
-            name="firstName"
             v-model="firstName"
+            name="firstName"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             placeholder="First Name"
@@ -47,8 +47,8 @@
           >
           <input
             id="lastName"
-            name="lastName"
             v-model="lastName"
+            name="lastName"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             placeholder="Last Name"
@@ -62,8 +62,8 @@
           >
           <input
             id="emailAddress"
-            name="emailAddress"
             v-model="emailAddress"
+            name="emailAddress"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             placeholder="Email Address"
@@ -77,8 +77,8 @@
           >
           <input
             id="password"
-            name="password"
             v-model="password"
+            name="password"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
             type="password"
             placeholder="******"
@@ -117,9 +117,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
 export default {
-  name: 'sign-up',
+  name: 'SignUp',
   middleware: ['reset'],
   components: {
     Loader
@@ -134,12 +135,10 @@ export default {
     }
   },
   computed: {
-    currentState() {
-      return this.$store.getters['state-machine/currentState']
-    },
-    errors() {
-      return this.$store.getters['messages/errors']
-    }
+    ...mapGetters({
+      currentState: 'state-machine/currentState',
+      errors: 'messages/errors'
+    })
   },
   methods: {
     onSubmit() {

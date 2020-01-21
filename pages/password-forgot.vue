@@ -68,9 +68,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
 export default {
-  name: 'forgot-password',
+  name: 'ForgotPassword',
   middleware: ['reset'],
   components: {
     Loader
@@ -81,12 +82,10 @@ export default {
     }
   },
   computed: {
-    currentState() {
-      return this.$store.getters['state-machine/currentState']
-    },
-    errors() {
-      return this.$store.getters['messages/errors']
-    }
+    ...mapGetters({
+      currentState: 'state-machine/currentState',
+      errors: 'messages/errors'
+    })
   },
   methods: {
     onSubmit() {

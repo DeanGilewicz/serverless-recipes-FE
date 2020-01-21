@@ -64,9 +64,9 @@
             </div>
             <div class="flex items-center justify-between">
               <button
+                @click="deleteLocalRecipeIngredient($event, index)"
                 class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 type="button"
-                @click="deleteLocalRecipeIngredient($event, index)"
               >
                 Delete Ingredient
               </button>
@@ -106,9 +106,9 @@
           </div>
           <div class="flex items-center justify-between">
             <button
+              @click="addLocalIngredient"
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
-              @click="addLocalIngredient"
             >
               Add Ingredient
             </button>
@@ -122,8 +122,8 @@
           >
           <textarea
             id="recipeInstructions"
-            name="recipeInstructions"
             v-model="recipeInstructions"
+            name="recipeInstructions"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
             placeholder="recipe instructions"
@@ -144,20 +144,20 @@
 
     <Modal v-if="showModal" @close="showModal = false">
       <h3
-        v-if="currentState === 'failure' || currentState === 'tryAgain'"
         slot="header"
+        v-if="currentState === 'failure' || currentState === 'tryAgain'"
       >
         Oh no something went wrong
       </h3>
       <p
-        v-if="currentState === 'failure' || currentState === 'tryAgain'"
         slot="body"
+        v-if="currentState === 'failure' || currentState === 'tryAgain'"
       >
         We were unable to create this {{ recipeName }} recipe
       </p>
       <div
-        v-if="currentState === 'failure' || currentState === 'tryAgain'"
         slot="footer"
+        v-if="currentState === 'failure' || currentState === 'tryAgain'"
       >
         <button
           @click="onCloseModal"
@@ -166,11 +166,11 @@
           Close
         </button>
       </div>
-      <h3 v-if="currentState === 'success'" slot="header">Success</h3>
-      <p v-if="currentState === 'success'" slot="body">
+      <h3 slot="header" v-if="currentState === 'success'">Success</h3>
+      <p slot="body" v-if="currentState === 'success'">
         Your {{ recipeName }} recipe has been created
       </p>
-      <div v-if="currentState === 'success'" slot="footer">
+      <div slot="footer" v-if="currentState === 'success'">
         <button
           @click="onCloseModalSuccess"
           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -183,10 +183,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
 import Modal from '@/components/Modal'
 export default {
-  name: 'add-recipe',
+  name: 'AddRecipe',
   layout: 'auth',
   middleware: ['auth', 'reset'],
   components: { Loader, Modal },
@@ -201,12 +202,10 @@ export default {
     }
   },
   computed: {
-    currentState() {
-      return this.$store.getters['state-machine/currentState']
-    },
-    errors() {
-      return this.$store.getters['messages/errors']
-    }
+    ...mapGetters({
+      currentState: 'state-machine/currentState',
+      errors: 'messages/errors'
+    })
   },
   methods: {
     onCloseModal() {
@@ -231,7 +230,6 @@ export default {
       const name = this.additionalIngredientName
       const amount = this.additionalIngredientAmount
       // only add ingredient if not empty
-      console.log(name, amount)
       if (!name || !amount) {
         return
       }
