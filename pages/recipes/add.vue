@@ -129,6 +129,45 @@
             placeholder="recipe instructions"
           ></textarea>
         </div>
+        <div class="mb-4">
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="recipeImage"
+            >
+              Recipe Image
+          </label>
+          <div class="container-image">
+            <div
+              v-if="imagePreview"
+              class="image"
+              :style="`background-image: url('${imagePreview}')`"
+            ></div>
+            <!-- <div
+              v-else
+              class="image"
+              :style="`background-image: url('${cloudinaryOptimizedImage}')`"
+            ></div> -->
+          </div>
+          <div class="container-image-trigger">
+            <input
+              ref="fileInput"
+              @change="onFileSelected"
+              type="file"
+              name="image"
+              accept="image/*"
+              style="display:none"
+            />
+            <div v-if="image" class="image-name">
+              <span>{{image.name}}</span>
+            </div>
+            <button @click="$refs.fileInput.click()" type="button">Choose File</button>
+          </div>
+          <div class="container-image-save">
+            <div v-if="image" class="image-clear">
+              <span @click="onRemoveImage">Clear Selection</span>
+            </div>
+          </div>
+        </div>
         <div class="flex items-center justify-between">
           <button
             :disabled="currentState === 'pending'"
@@ -198,6 +237,8 @@ export default {
       additionalIngredientAmount: '',
       ingredients: [],
       recipeInstructions: '',
+      image: '',
+      imagePreview: '',
       showModal: false
     }
   },
@@ -242,6 +283,21 @@ export default {
       this.additionalIngredientName = ''
       this.additionalIngredientAmount = ''
     },
+    onFileSelected(event) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        this.imagePreview = e.target.result
+      }
+      if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0])
+        this.image = event.target.files[0]
+      }
+    },
+    onRemoveImage() {
+      this.image = ''
+      this.$refs.fileInput.value = ''
+      this.imagePreview = ''
+    },
     onSubmit() {
       // plugin fns
       const validRecipeName = this.$validTextInput(
@@ -274,26 +330,31 @@ export default {
       if (this.$store.getters['messages/errors'].length > 0) {
         return
       }
-      // construct post data obj
-      const postData = {
-        recipeName: this.$sanitizeData(this.recipeName),
-        ingredients: this.ingredients, // sanitize handled when ingredient created
-        instructions: this.$sanitizeData(this.recipeInstructions),
-        image: ''
+      // add image if exists
+      if (this.image) {
+        // validate
+        console.log(this.image)
       }
-      // trigger loading state
-      this.$store.dispatch('state-machine/updateInitialState')
-      // xhr create recipe
-      this.$store
-        .dispatch('auth/createRecipe', postData)
-        .then((res) => {
-          // show modal
-          this.showModal = true
-        })
-        .catch((e) => {
-          // show modal
-          this.showModal = true
-        })
+      // // construct post data obj
+      // const postData = {
+      //   recipeName: this.$sanitizeData(this.recipeName),
+      //   ingredients: this.ingredients, // sanitize handled when ingredient created
+      //   instructions: this.$sanitizeData(this.recipeInstructions),
+      //   image: ''
+      // }
+      // // trigger loading state
+      // this.$store.dispatch('state-machine/updateInitialState')
+      // // xhr create recipe
+      // this.$store
+      //   .dispatch('auth/createRecipe', postData)
+      //   .then((res) => {
+      //     // show modal
+      //     this.showModal = true
+      //   })
+      //   .catch((e) => {
+      //     // show modal
+      //     this.showModal = true
+      //   })
     }
   }
 }
@@ -334,5 +395,19 @@ export default {
 
 .links {
   padding-top: 15px;
+}
+
+.container-image {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 </style>
