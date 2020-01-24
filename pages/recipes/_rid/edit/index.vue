@@ -174,6 +174,61 @@
         </button>
       </div>
     </form>
+    <form
+      action=""
+      @submit.prevent="onUploadImage"
+      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+      encrypt="multipart/form-data"
+    >
+      <div>
+        <label
+          class="block text-gray-700 text-sm font-bold mb-2"
+          for="recipeImage"
+          >
+            Recipe Image
+        </label>
+        <div class="container-image">
+          <div
+            v-if="imagePreview"
+            class="image"
+            :style="`background-image: url('${imagePreview}')`"
+          ></div>
+          <div
+            v-else
+            class="image"
+            :style="`background-image: url('${cloudinaryOptimizedImage}')`"
+          ></div>
+        </div>
+        <div class="container-image-trigger">
+          <input
+            ref="fileInput"
+            @change="onFileSelected"
+            type="file"
+            name="image"
+            accept="image/*"
+            style="display:none"
+          />
+          <div v-if="image" class="image-name">
+            <span>{{image.name}}</span>
+          </div>
+          <button @click="$refs.fileInput.click()" type="button">Choose File</button>
+        </div>
+        <div class="container-image-save">
+          <div v-if="image" class="image-clear">
+            <span @click="onRemoveImage">Clear Selection</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center justify-between">
+        <button
+          :disabled="currentState === 'pending'"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          type="submit"
+        >
+          Change Photo
+        </button>
+      </div>
+    </form>
     <Loader :showLoader="currentState === 'pending'" />
 
     <Modal v-if="showModal" @close="showModal = false">
@@ -259,6 +314,8 @@ export default {
       additionalIngredientName: '',
       additionalIngredientAmount: '',
       updatedRecipe: null, // deep clone of recipe
+      image: '',
+      imagePreview: '',
       showModal: false
     }
   },
@@ -266,7 +323,19 @@ export default {
     ...mapGetters({
       currentState: 'state-machine/currentState',
       errors: 'messages/errors'
-    })
+    }),
+    cloudinaryOptimizedImage() {
+      if (this.updatedRecipe && this.updatedRecipe.image) {
+        const cloudinaryUploadUrl =
+          'https://res.cloudinary.com/cloudassets/image/upload/'
+        const optimizedUrl = this.updatedRecipe.image.split(cloudinaryUploadUrl)
+        // add cloudinary optimizations
+        optimizedUrl[0] = cloudinaryUploadUrl + 'q_auto,f_auto/'
+        return optimizedUrl.join('')
+      } else {
+        return 'https://res.cloudinary.com/cloudassets/image/upload/q_auto,f_auto/v1579839990/recipes/recipe-placeholder.png'
+      }
+    }
   },
   created() {
     // check vuex for this recipe - if fail then xhr request this recipe
@@ -294,7 +363,6 @@ export default {
     }
   },
   methods: {
-    // ...mapActions('recipe', ['updateRecipe']),
     updateLocalRecipe(e) {
       this.$set(
         this.updatedRecipe,
@@ -336,6 +404,51 @@ export default {
       this.$store.dispatch('state-machine/setInitialState')
       // close modal
       this.showModal = false
+    },
+    onFileSelected(event) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        this.imagePreview = e.target.result
+      }
+      if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0])
+        this.image = event.target.files[0]
+      }
+    },
+    onRemoveImage() {
+      this.image = ''
+      this.$refs.fileInput.value = ''
+      this.imagePreview = ''
+    },
+    onUploadImage() {
+      // exit if no image selected
+      if (!this.image) {
+        return
+      }
+      // construct image
+      const fd = new FormData()
+      fd.append('image', this.image)
+      console.log('IMAGE', this.image)
+      // construct post data obj
+      const postData = {
+        recipeId: this.$route.params.rid,
+        image: fd
+      }
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
+      // xhr create recipe
+      this.$store
+        .dispatch('recipe/updateRecipeImage', postData)
+        .then((res) => {
+          // show success msg
+          // clear file
+          this.onRemoveImage()
+          // update vuex recipe image
+        })
+        .catch((e) => {
+          // show error message
+          // then
+        })
     },
     onSubmit() {
       // plugin fns
@@ -401,4 +514,18 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.container-image {
+  width: 140px;
+  height: 140px;
+  /* margin: 0 auto; */
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+</style>
