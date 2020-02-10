@@ -27,7 +27,7 @@
             name="recipeName"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
-            placeholder="recipeName"
+            placeholder="recipe name"
           />
         </div>
         <div v-if="ingredients">
@@ -44,7 +44,7 @@
                 name="ingredientName"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 type="text"
-                placeholder="Ingredient Name"
+                placeholder="ingredient name"
               />
             </div>
             <div>
@@ -59,7 +59,7 @@
                 name="ingredientAmount"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 type="text"
-                placeholder="Ingredient Amount"
+                placeholder="ingredient amount"
               />
             </div>
             <div class="flex items-center justify-between">
@@ -86,7 +86,7 @@
               name="additionalIngredientName"
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
-              placeholder="Additional Ingredient Name"
+              placeholder="additional ingredient name"
             />
           </div>
           <div>
@@ -101,7 +101,7 @@
               name="additionalIngredientAmount"
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
-              placeholder="Additional Ingredient Amount"
+              placeholder="additional ingredient amount"
             />
           </div>
           <div class="flex items-center justify-between">
@@ -285,7 +285,7 @@ export default {
       this.$store.dispatch('state-machine/updateInitialState')
       // xhr create recipe
       this.$store
-        .dispatch('auth/createRecipe', postData)
+        .dispatch('recipe/createRecipe', postData)
         .then((res) => {
           // show modal
           this.showModal = true

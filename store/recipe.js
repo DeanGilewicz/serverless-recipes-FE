@@ -32,7 +32,7 @@ export const actions = {
   },
   createRecipe(context, postData) {
     return this.$axios
-      .$post('/dev/api/recipes/create', postData, {
+      .$post('/recipes/create', postData, {
         headers: {
           Authorization: this.$getAuthUserToken('idToken')
         }
@@ -63,7 +63,7 @@ export const actions = {
   },
   getRecipes(context) {
     return this.$axios
-      .$get('/dev/api/recipes', {
+      .$get('/recipes', {
         headers: {
           Authorization: this.$getAuthUserToken('idToken')
         }
@@ -87,7 +87,7 @@ export const actions = {
   },
   getRecipe(context, recipeId) {
     return this.$axios
-      .$get('/dev/api/recipes/' + recipeId, {
+      .$get('/recipes/' + recipeId, {
         headers: {
           Authorization: this.$getAuthUserToken('idToken')
         }
@@ -117,7 +117,7 @@ export const actions = {
   },
   updateRecipe(context, postData) {
     return this.$axios
-      .$put(`/dev/api/recipes/${postData.recipeId}/update`, postData, {
+      .$put(`/recipes/${postData.recipeId}/update`, postData, {
         headers: {
           Authorization: this.$getAuthUserToken('idToken')
         }
@@ -142,32 +142,33 @@ export const actions = {
       })
   },
   updateRecipeImage(context, postData) {
-    console.log('POSTDATA', postData)
-    // return this.$axios
-    //   .$put(`/dev/api/recipes/${postData.recipeId}/update`, postData, {
-    //     headers: {
-    //       Authorization: this.$getAuthUserToken('idToken'),
-    // 'Content-Type': 'multipart/form-data'
-    //     }
-    //   })
-    //   .then((res) => {
-    //     // add recipe to vuex
-    //     context.dispatch('setRecipe', res.Attributes)
-    // trigger success state
-    context.dispatch('state-machine/updatePendingState', 'success', {
-      root: true
-    })
-    //   })
-    //   .catch((e) => {
-    //     // trigger error state status
-    //     context.dispatch('state-machine/updateFailureState', null, {
-    //       root: true
-    //     })
-    // set error message
-    // context.dispatch('messages/setError', 'Unable to update recipe', {
-    //   root: true
-    // })
-    //   })
+    return this.$axios
+      .$put(`/recipes/${postData.recipeId}/updateImage`, postData.file, {
+        headers: {
+          Authorization: this.$getAuthUserToken('idToken'),
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then((res) => {
+        // add recipe to vuex
+        context.dispatch('setRecipe', res.Attributes)
+        // trigger success state
+        context.dispatch('state-machine/updatePendingState', 'success', {
+          root: true
+        })
+        // return image to vue calling method to update
+        return res.Attributes.image
+      })
+      .catch((e) => {
+        // trigger error state status
+        context.dispatch('state-machine/updateFailureState', null, {
+          root: true
+        })
+        // set error message
+        context.dispatch('messages/setError', 'Unable to update recipe', {
+          root: true
+        })
+      })
   },
   deleteRecipe(context, recipeId) {
     return this.$axios

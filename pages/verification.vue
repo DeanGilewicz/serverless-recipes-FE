@@ -5,7 +5,11 @@
       class="w-full max-w-xs text-left p-8"
     >
       <p>Your account has been confirmed.</p>
-      <nuxt-link to="/">Login</nuxt-link>
+      <nuxt-link
+        to="/"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >Login</nuxt-link
+      >
     </div>
     <div v-else class="w-full max-w-xs">
       <form

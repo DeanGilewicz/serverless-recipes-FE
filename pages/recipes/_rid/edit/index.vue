@@ -58,11 +58,11 @@
           <div class="mb-4">
             <label
               class="block text-gray-700 text-sm font-bold mb-2"
-              for="ingredientName"
+              :for="'ingredientName-' + index"
               >Ingredient Name</label
             >
             <input
-              id="ingredientName"
+              :id="'ingredientName-' + index"
               :value="ingredient.name"
               @input="updateLocalRecipeIngredient($event, 'name', index)"
               name="ingredientName"
@@ -74,11 +74,11 @@
           <div>
             <label
               class="block text-gray-700 text-sm font-bold mb-2"
-              for="ingredientAmount"
+              :for="'ingredientAmount-' + index"
               >Ingredient Amount</label
             >
             <input
-              id="ingredientAmount"
+              :id="'ingredientAmount' + index"
               :value="ingredient.amount"
               @input="updateLocalRecipeIngredient($event, 'amount', index)"
               name="ingredientAmount"
@@ -178,14 +178,14 @@
       action=""
       @submit.prevent="onUploadImage"
       class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-      encrypt="multipart/form-data"
+      enctype="multipart/form-data"
     >
       <div>
         <label
           class="block text-gray-700 text-sm font-bold mb-2"
           for="recipeImage"
-          >
-            Recipe Image
+        >
+          Recipe Image
         </label>
         <div class="container-image">
           <div
@@ -209,9 +209,11 @@
             style="display:none"
           />
           <div v-if="image" class="image-name">
-            <span>{{image.name}}</span>
+            <span>{{ image.name }}</span>
           </div>
-          <button @click="$refs.fileInput.click()" type="button">Choose File</button>
+          <button @click="$refs.fileInput.click()" type="button">
+            Choose File
+          </button>
         </div>
         <div class="container-image-save">
           <div v-if="image" class="image-clear">
@@ -427,27 +429,24 @@ export default {
       }
       // construct image
       const fd = new FormData()
-      fd.append('image', this.image)
-      console.log('IMAGE', this.image)
+      fd.append('file', this.image)
       // construct post data obj
       const postData = {
         recipeId: this.$route.params.rid,
-        image: fd
+        file: fd
       }
       // trigger loading state
       this.$store.dispatch('state-machine/updateInitialState')
       // xhr create recipe
       this.$store
         .dispatch('recipe/updateRecipeImage', postData)
-        .then((res) => {
-          // show success msg
+        .then((updatedImage) => {
           // clear file
           this.onRemoveImage()
-          // update vuex recipe image
-        })
-        .catch((e) => {
-          // show error message
-          // then
+          // update image
+          this.updatedRecipe.image = updatedImage
+          // show success msg
+          this.showModal = true
         })
     },
     onSubmit() {

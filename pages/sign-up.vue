@@ -8,7 +8,11 @@
         Thanks for signing up. Please check your email to confirm
         your&nbsp;account.
       </p>
-      <nuxt-link to="/">Login</nuxt-link>
+      <nuxt-link
+        to="/"
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >Login</nuxt-link
+      >
     </div>
     <div v-else class="w-full max-w-xs">
       <form

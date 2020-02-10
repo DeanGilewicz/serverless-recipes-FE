@@ -20,7 +20,7 @@ export const actions = {
   },
   signUp(context, postData) {
     return this.$axios
-      .$post('/dev/api/users/create', postData)
+      .$post('/users/create', postData)
       .then((res) => {
         // trigger success state
         context.dispatch('state-machine/updatePendingState', 'success', {
@@ -42,7 +42,7 @@ export const actions = {
   },
   resendConfirmation(context, postData) {
     return this.$axios
-      .$post('/dev/api/users/resendConfirmation', postData)
+      .$post('/users/resendConfirmation', postData)
       .then((res) => {
         // trigger success state
         context.dispatch('state-machine/updatePendingState', 'success', {
@@ -62,7 +62,7 @@ export const actions = {
   },
   userConfirmation(context, postData) {
     return this.$axios
-      .$post('/dev/api/users/confirm', postData)
+      .$post('/users/confirm', postData)
       .then((res) => {
         // trigger success state
         context.dispatch('state-machine/updatePendingState', 'success', {
@@ -86,7 +86,7 @@ export const actions = {
   },
   forgotPassword(context, postData) {
     return this.$axios
-      .$post('/dev/api/users/forgotPassword', postData)
+      .$post('/users/forgotPassword', postData)
       .then((res) => {
         // trigger success state
         context.dispatch('state-machine/updatePendingState', 'success', {
@@ -106,7 +106,7 @@ export const actions = {
   },
   forgotPasswordConfirm(context, postData) {
     return this.$axios
-      .$post('/dev/api/users/forgotPasswordConfirm', postData)
+      .$post('/users/forgotPasswordConfirm', postData)
       .then((data) => {
         // trigger success state
         context.dispatch('state-machine/updatePendingState', 'success', {
@@ -128,7 +128,7 @@ export const actions = {
   },
   login(context, postData) {
     return this.$axios
-      .$post('/dev/api/users/login', postData)
+      .$post('/users/login', postData)
       .then((res) => {
         const user = {
           emailVerified: res.user.emailVerified,
@@ -160,7 +160,7 @@ export const actions = {
   },
   updateUser(context, postData) {
     return this.$axios
-      .$put('/dev/api/users/updateUser', postData, {
+      .$put('/users/updateUser', postData, {
         headers: {
           Authorization: this.$getAuthUserToken('idToken')
         }
@@ -198,7 +198,7 @@ export const actions = {
   },
   changePassword(context, postData) {
     return this.$axios
-      .$post('/dev/api/users/changePassword', postData, {
+      .$post('/users/changePassword', postData, {
         headers: {
           Authorization: this.$getAuthUserToken('idToken')
         }
@@ -226,7 +226,7 @@ export const actions = {
     // log user out
     return this.$axios
       .$post(
-        '/dev/api/users/logOut',
+        '/users/logOut',
         {},
         {
           headers: {
@@ -243,7 +243,7 @@ export const actions = {
   },
   deleteUser(context) {
     return this.$axios
-      .$delete('/dev/api/users/deleteUser', {
+      .$delete('/users/deleteUser', {
         headers: {
           Authorization: this.$getAuthUserToken('idToken')
         },
@@ -277,7 +277,7 @@ export const actions = {
   authorize(context) {
     return this.$axios
       .$post(
-        '/dev/api/users/authorization',
+        '/users/authorization',
         {},
         {
           headers: {

@@ -1,4 +1,5 @@
 export default function(context) {
+  // console.log('here')
   const isAuthenticated = context.store.getters['auth/isAuthenticated']
   const isUserAuthed = context.app.$isUserAuthed()
   if (!isAuthenticated || !isUserAuthed) {
