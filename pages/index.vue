@@ -1,19 +1,12 @@
 <template>
   <div class="container">
-    <div class="w-full max-w-xs">
+    <div class="w-full max-w-sm">
       <form
         @submit.prevent="onSubmit"
-        class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        class="bg-white xs:shadow-md rounded px-8 pt-6 pb-8 mb-4"
         action=""
       >
-        <div v-if="errors && errors.length > 0" class="mb-8 text-left">
-          <p>Oh no, we have some errors:</p>
-          <ul>
-            <li v-for="(error, index) in errors" :key="index" class="list-disc">
-              {{ error }}
-            </li>
-          </ul>
-        </div>
+        <Error :errors="errors" />
         <div class="mb-4">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
@@ -44,26 +37,26 @@
             placeholder="******"
           />
         </div>
-        <div class="flex items-center justify-between">
+        <div class="xs:flex xs:items-center xs:justify-between">
           <div>
             <button
               :disabled="currentState === 'pending'"
-              class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700  focus:outline-none focus:shadow-outline disabled:opacity-50"
+              class="w-full xs:w-auto bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline disabled:opacity-50"
               type="submit"
             >
               <span v-if="currentState === 'tryAgain'">Try Again</span>
               <span v-else>Log In</span>
             </button>
           </div>
-          <div class="flex flex-col text-left">
+          <div class="xs:flex xs:flex-col xs:text-left mt-4 xs:mt-0">
             <nuxt-link
-              class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+              class="w-full xs:w-auto inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
               to="/sign-up"
             >
               Create Account
             </nuxt-link>
             <nuxt-link
-              class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+              class="w-full xs:w-auto inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
               to="/password-forgot"
             >
               Forgot Password?
@@ -79,11 +72,13 @@
 <script>
 import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
+import Error from '@/components/Error'
 export default {
   name: 'Home',
   middleware: ['reset'],
   components: {
-    Loader
+    Loader,
+    Error
   },
   data() {
     return {

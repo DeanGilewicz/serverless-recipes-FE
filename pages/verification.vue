@@ -1,30 +1,18 @@
 <template>
   <div class="container">
-    <div
+    <Success
       v-if="currentState === 'success'"
-      class="w-full max-w-xs text-left p-8"
-    >
-      <p>Your account has been confirmed.</p>
-      <nuxt-link
-        to="/"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >Login</nuxt-link
-      >
-    </div>
-    <div v-else class="w-full max-w-xs">
+      message="Your account has been confirmed."
+      :showLink="true"
+      :link="{ destination: '/', text: 'Login' }"
+    />
+    <div v-else class="w-full max-w-sm">
       <form
         @submit.prevent="onSubmit"
-        class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        class="bg-white xs:shadow-md rounded px-8 pt-6 pb-8 mb-4"
         action=""
       >
-        <div v-if="errors.length > 0" class="mb-8 text-left">
-          <p>Oh no, we have some errors:</p>
-          <ul>
-            <li v-for="(error, index) in errors" :key="index" class="list-disc">
-              {{ error }}
-            </li>
-          </ul>
-        </div>
+        <Error :errors="errors" />
         <div class="mb-4">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
@@ -55,10 +43,10 @@
             placeholder="******"
           />
         </div>
-        <div class="flex items-center justify-between">
+        <div class="xs:flex xs:items-center xs:justify-between">
           <button
             :disabled="currentState === 'pending'"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            class="w-full xs:w-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
           >
             <span v-if="currentState === 'tryAgain'">Try Again</span>
@@ -74,11 +62,15 @@
 <script>
 import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
+import Success from '@/components/Success'
+import Error from '@/components/Error'
 export default {
   name: 'Verification',
   middleware: ['reset'],
   components: {
-    Loader
+    Loader,
+    Success,
+    Error
   },
   data() {
     return {

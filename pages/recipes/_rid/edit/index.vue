@@ -1,11 +1,6 @@
 <template>
   <div>
     <h1>Recipe</h1>
-    <!-- <form
-			@submit.prevent="onDelete"
-			class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-			action=""
-		> -->
     <form
       @submit.prevent="showModal = true"
       class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"

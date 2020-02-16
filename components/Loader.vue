@@ -1,7 +1,7 @@
 <template>
-	<div v-if="showLoader" class="loader">
-		<div class="loader-dual-ring"></div>
-	</div>
+  <div v-if="showLoader" class="loader">
+    <div class="loader-dual-ring"></div>
+  </div>
 </template>
 
 <script>
@@ -17,7 +17,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="css" scoped>
 .loader {
   position: fixed;
   top: 0;
@@ -27,7 +27,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(99, 179, 237, 0.3);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 .loader-dual-ring {
   display: inline-block;
