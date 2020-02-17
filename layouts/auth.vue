@@ -1,7 +1,7 @@
 <template>
   <div>
-		<Navigation/>
-    <nuxt />
+    <Navigation />
+    <nuxt class="max-w-5xl my-0 mx-auto" />
   </div>
 </template>
 

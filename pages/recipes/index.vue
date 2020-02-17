@@ -1,23 +1,38 @@
 <template>
-  <div class="w-full">
-    <div class="max-w-lg">
-      <h1>Recipes</h1>
-      <div v-if="recipes" class="container-recipes">
+  <div class="page-home">
+    <div class="py-4 text-center">
+      <h1 class="text-3xl">RECIPES</h1>
+    </div>
+    <nav class="py-4 text-center">
+      <nuxt-link
+        to="/recipes/add"
+        class="inline-block w-full xs:w-auto bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline disabled:opacity-50"
+        >Add Recipe</nuxt-link
+      >
+    </nav>
+    <div v-if="recipes" class="">
+      <div
+        v-for="recipe in recipes"
+        :key="recipe.recipeId"
+        class="sm:flex border-t-2 border-gray-600"
+      >
+        <div v-if="recipe.image" class="p-4 sm:border-b-4 sm:border-gray-600">
+          <img
+            :src="recipe.image"
+            :alt="recipe.recipeName"
+            class="custom-max-width sm:max-w-xs"
+          />
+        </div>
         <div
-          v-for="recipe in recipes"
-          :key="recipe.recipeId"
-          class="container-recipe"
+          class="sm:flex sm:justify-center sm:items-center sm:flex-auto p-4 text-center bg-gray-300 border-b-4 border-gray-600"
         >
-          <nuxt-link :to="'/recipes/' + recipe.recipeId">
-            <p>{{ recipe.recipeName }}</p>
-            <p v-if="recipe.image">
-              <img :src="recipe.image" :alt="recipe.recipeName" />
-            </p>
+          <nuxt-link :to="'/recipes/' + recipe.recipeId" class="block">
+            <h2>{{ recipe.recipeName }}</h2>
           </nuxt-link>
         </div>
       </div>
-      <nuxt-link to="/recipes/add">Add Recipe</nuxt-link>
     </div>
+
     <Loader :showLoader="currentState === 'pending'" />
 
     <Modal v-if="showModal" @close="showModal = false">
@@ -31,8 +46,7 @@
           Close
         </button>
       </div>
-		</Modal>
-
+    </Modal>
   </div>
 </template>
 
@@ -79,22 +93,32 @@ export default {
 }
 </script>
 
-<style>
+<style lang="css" scoped>
+img.custom-max-width {
+  width: 100%;
+  max-width: 16rem;
+  margin: 0 auto;
+}
+
+/* @media only screen and (min-width: 480px) {
+
+} */
+
 /* Sample `apply` at-rules with Tailwind CSS
 .container {
   @apply min-h-screen flex justify-center items-center text-center mx-auto;
 }
 */
-.container {
+/* .container {
   margin: 0 auto;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-}
+} */
 
-.title {
+/* .title {
   font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   display: block;
@@ -102,9 +126,9 @@ export default {
   font-size: 100px;
   color: #35495e;
   letter-spacing: 1px;
-}
+} */
 
-.subtitle {
+/* .subtitle {
   font-weight: 300;
   font-size: 42px;
   color: #526488;
@@ -114,5 +138,5 @@ export default {
 
 .links {
   padding-top: 15px;
-}
+} */
 </style>

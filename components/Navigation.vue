@@ -1,38 +1,26 @@
 <template>
-  <div class="w-full">
-    <div class="max-w-lg">
-      <div>
-        <div v-if="this.$store.state.auth.user">
-          <span
-            >Logged in as: {{ this.$store.state.auth.user.emailAddress }}</span
-          >
-        </div>
-        <nuxt-link
-          to="/my-account"
-          class="inline-block bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-        >
+  <div class="py-4 px-4 bg-gray-700 text-white">
+    <nav
+      class="xs:flex xs:justify-between xs:items-start max-w-5xl my-0 mx-auto"
+    >
+      <div class="mb-2">
+        <nuxt-link to="/my-account" class="">
           My Account
         </nuxt-link>
-        <nuxt-link
-          to="/recipes"
-          class="inline-block bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-        >
+      </div>
+      <div class="mb-2">
+        <nuxt-link to="/recipes" class="">
           My Recipes
         </nuxt-link>
-        <form
-          @submit.prevent="onLogOut"
-          class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-          action=""
-        >
-          <input
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            value="Log Out"
-            type="submit"
-          />
-          <span v-if="errorMsg">{{ errorMsg }}</span>
-        </form>
       </div>
-    </div>
+      <div v-if="this.$store.state.auth.user" class="hidden sm:block mb-2">
+        <span>Hello, {{ this.$store.state.auth.user.emailAddress }}</span>
+      </div>
+      <form @submit.prevent="onLogOut" class="" action="">
+        <input class="bg-transparent" value="Log Out" type="submit" />
+        <span v-if="errorMsg">{{ errorMsg }}</span>
+      </form>
+    </nav>
   </div>
 </template>
 
