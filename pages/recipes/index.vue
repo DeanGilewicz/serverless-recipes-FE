@@ -6,11 +6,11 @@
     <nav class="py-4 text-center">
       <nuxt-link
         to="/recipes/add"
-        class="inline-block w-full xs:w-auto bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline disabled:opacity-50"
+        class="inline-block w-full xs:w-auto bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline disabled:opacity-50"
         >Add Recipe</nuxt-link
       >
     </nav>
-    <div v-if="recipes" class="">
+    <div v-if="recipes">
       <div
         v-for="recipe in recipes"
         :key="recipe.recipeId"

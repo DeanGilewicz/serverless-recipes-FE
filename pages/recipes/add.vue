@@ -1,20 +1,19 @@
 <template>
-  <div class="container">
-    <div class="w-full max-w-xs">
-      <nuxt-link to="/recipes">Go to Recipes</nuxt-link>
-      <form
-        @submit.prevent="onSubmit"
-        class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-        action=""
+  <div class="page-add-recipe">
+    <div class="py-4 text-center">
+      <h1 class="text-3xl">ADD RECIPE</h1>
+    </div>
+    <nav class="py-4 text-center">
+      <nuxt-link
+        to="/recipes"
+        class="inline-block w-full xs:w-auto bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline disabled:opacity-50"
       >
-        <div v-if="errors.length > 0" class="mb-8 text-left">
-          <p>Oh no, we have some errors:</p>
-          <ul>
-            <li v-for="(error, index) in errors" :key="index" class="list-disc">
-              {{ error }}
-            </li>
-          </ul>
-        </div>
+        All Recipes
+      </nuxt-link>
+    </nav>
+    <div class="w-full max-w-md my-0 mx-auto">
+      <form @submit.prevent="onSubmit" class="px-8 pt-6 pb-8 mb-4" action="">
+        <Error :errors="errors" />
         <div class="mb-4">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
@@ -27,12 +26,16 @@
             name="recipeName"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
-            placeholder="recipe name"
+            placeholder="name"
           />
         </div>
         <div v-if="ingredients">
-          <div v-for="(ingredient, index) in ingredients" :key="index">
-            <div class="mb-4">
+          <div
+            v-for="(ingredient, index) in ingredients"
+            :key="index"
+            class="my-8"
+          >
+            <div class="mb-2">
               <label
                 class="block text-gray-700 text-sm font-bold mb-2"
                 for="ingredientName"
@@ -42,12 +45,12 @@
                 id="ingredientName"
                 v-model="ingredient.name"
                 name="ingredientName"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 type="text"
-                placeholder="ingredient name"
+                placeholder="name"
               />
             </div>
-            <div>
+            <div class="mb-4">
               <label
                 class="block text-gray-700 text-sm font-bold mb-2"
                 for="ingredientAmount"
@@ -57,15 +60,15 @@
                 id="ingredientAmount"
                 v-model="ingredient.amount"
                 name="ingredientAmount"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 type="text"
-                placeholder="ingredient amount"
+                placeholder="amount"
               />
             </div>
             <div class="flex items-center justify-between">
               <button
                 @click="deleteLocalRecipeIngredient($event, index)"
-                class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 type="button"
               >
                 Delete Ingredient
@@ -73,8 +76,8 @@
             </div>
           </div>
         </div>
-        <div>
-          <div class="mb-4">
+        <div class="my-8">
+          <div class="mb-2">
             <label
               class="block text-gray-700 text-sm font-bold mb-2"
               for="additionalIngredientName"
@@ -86,10 +89,10 @@
               name="additionalIngredientName"
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
-              placeholder="additional ingredient name"
+              placeholder="additional name"
             />
           </div>
-          <div>
+          <div class="mb-4">
             <label
               class="block text-gray-700 text-sm font-bold mb-2"
               for="additionalIngredientAmount"
@@ -99,22 +102,22 @@
               id="additionalIngredientAmount"
               v-model="additionalIngredientAmount"
               name="additionalIngredientAmount"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
-              placeholder="additional ingredient amount"
+              placeholder="additional amount"
             />
           </div>
           <div class="flex items-center justify-between">
             <button
               @click="addLocalIngredient"
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
             >
               Add Ingredient
             </button>
           </div>
         </div>
-        <div class="mb-4">
+        <div class="mb-8">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
             for="recipeInstructions"
@@ -126,7 +129,7 @@
             name="recipeInstructions"
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
-            placeholder="recipe instructions"
+            placeholder="instructions"
           ></textarea>
         </div>
         <div class="flex items-center justify-between">
@@ -186,11 +189,12 @@
 import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
 import Modal from '@/components/Modal'
+import Error from '@/components/Error'
 export default {
   name: 'AddRecipe',
   layout: 'auth',
   middleware: ['auth', 'reset'],
-  components: { Loader, Modal },
+  components: { Loader, Modal, Error },
   data() {
     return {
       recipeName: '',
@@ -305,7 +309,7 @@ export default {
   @apply min-h-screen flex justify-center items-center text-center mx-auto;
 }
 */
-.container {
+/* .container {
   margin: 0 auto;
   min-height: 100vh;
   display: flex;
@@ -334,5 +338,5 @@ export default {
 
 .links {
   padding-top: 15px;
-}
+} */
 </style>

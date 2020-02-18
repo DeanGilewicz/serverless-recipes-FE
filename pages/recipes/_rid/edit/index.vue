@@ -1,231 +1,235 @@
 <template>
-  <div>
-    <h1>Recipe</h1>
-    <form
-      @submit.prevent="showModal = true"
-      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-      action=""
-    >
-      <div class="flex items-center justify-between">
+  <div class="page-edit-recipe">
+    <div class="py-4 text-center">
+      <h1 class="text-3xl">RECIPE</h1>
+    </div>
+    <div class="py-4 text-center">
+      <form @submit.prevent="showModal = true" class="px-8 pt-4 pb-2" action="">
+        <nuxt-link
+          to="/recipes"
+          class="inline-block w-full xs:w-auto bg-green-500 text-white font-bold py-2 px-4 mb-4 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline disabled:opacity-50"
+          >All Recipes</nuxt-link
+        >
         <button
           :disabled="currentState === 'pending'"
-          class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="submit"
         >
           Delete Recipe
         </button>
-      </div>
-    </form>
-    <form
-      @submit.prevent="onSubmit"
-      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-      action=""
-    >
-      <div v-if="errors.length > 0" class="mb-8 text-left">
-        <p>Oh no, we have some errors:</p>
-        <ul>
-          <li v-for="(error, index) in errors" :key="index" class="list-disc">
-            {{ error }}
-          </li>
-        </ul>
-      </div>
-      <div v-if="updatedRecipe" class="mb-4">
-        <label
-          class="block text-gray-700 text-sm font-bold mb-2"
-          for="recipeName"
-          >Recipe Name</label
-        >
-        <input
-          id="recipeName"
-          :value="updatedRecipe.recipeName"
-          @input="updateLocalRecipe($event)"
-          name="recipeName"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          type="text"
-          placeholder="recipeName"
-        />
-      </div>
-      <div v-if="updatedRecipe && updatedRecipe.ingredients">
-        <div
-          v-for="(ingredient, index) in updatedRecipe.ingredients"
-          :key="index"
-        >
+      </form>
+    </div>
+    <div class="w-full max-w-md my-0 mx-auto">
+      <form
+        action=""
+        @submit.prevent="onUploadImage"
+        class="px-8 pt-4 pb-4 mb-2"
+        enctype="multipart/form-data"
+      >
+        <div>
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="recipeImage"
+          >
+            Recipe Image
+          </label>
+          <div class="container-image">
+            <div
+              v-if="imagePreview"
+              class="image"
+              :style="`background-image: url('${imagePreview}')`"
+            ></div>
+            <div
+              v-else
+              class="image"
+              :style="`background-image: url('${cloudinaryOptimizedImage}')`"
+            ></div>
+          </div>
+          <div class="container-image-trigger">
+            <input
+              ref="fileInput"
+              @change="onFileSelected"
+              type="file"
+              name="image"
+              accept="image/*"
+              style="display:none"
+            />
+            <div
+              v-if="image"
+              class="block text-gray-700 text-sm font-bold mb-2"
+            >
+              <span>{{ image.name }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="">
+          <button
+            v-if="image"
+            class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="button"
+          >
+            <span @click="onRemoveImage">Cancel</span>
+          </button>
+          <button
+            @click="$refs.fileInput.click()"
+            type="button"
+            class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Choose File
+          </button>
+          <button
+            :disabled="currentState === 'pending'"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            Change Photo
+          </button>
+        </div>
+      </form>
+      <form @submit.prevent="onSubmit" class="px-8 pt-6 pb-8 mb-4" action="">
+        <Error :errors="errors" />
+        <div v-if="updatedRecipe" class="mb-4">
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="recipeName"
+            >Recipe Name</label
+          >
+          <input
+            id="recipeName"
+            :value="updatedRecipe.recipeName"
+            @input="updateLocalRecipe($event)"
+            name="recipeName"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="text"
+            placeholder="name"
+          />
+        </div>
+        <div v-if="updatedRecipe && updatedRecipe.ingredients">
+          <div
+            v-for="(ingredient, index) in updatedRecipe.ingredients"
+            :key="index"
+            class="my-8"
+          >
+            <div class="mb-2">
+              <label
+                class="block text-gray-700 text-sm font-bold mb-2"
+                :for="'ingredientName-' + index"
+                >Ingredient Name</label
+              >
+              <input
+                :id="'ingredientName-' + index"
+                :value="ingredient.name"
+                @input="updateLocalRecipeIngredient($event, 'name', index)"
+                name="ingredientName"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                type="text"
+                placeholder="name"
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                class="block text-gray-700 text-sm font-bold mb-2"
+                :for="'ingredientAmount-' + index"
+                >Ingredient Amount</label
+              >
+              <input
+                :id="'ingredientAmount' + index"
+                :value="ingredient.amount"
+                @input="updateLocalRecipeIngredient($event, 'amount', index)"
+                name="ingredientAmount"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                type="text"
+                placeholder="amount"
+              />
+            </div>
+            <div class="flex items-center justify-between">
+              <button
+                @click="deleteLocalRecipeIngredient($event, index)"
+                class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="button"
+              >
+                Delete Ingredient
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="mb-8">
+          <div class="mb-2">
+            <label
+              class="block text-gray-700 text-sm font-bold mb-2"
+              for="additionalIngredientName"
+              >Additional Ingredient Name</label
+            >
+            <input
+              id="additionalIngredientName"
+              ref="additionalIngredientName"
+              :value="additionalIngredientName"
+              name="additionalIngredientName"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              type="text"
+              placeholder="additional name"
+            />
+          </div>
           <div class="mb-4">
             <label
               class="block text-gray-700 text-sm font-bold mb-2"
-              :for="'ingredientName-' + index"
-              >Ingredient Name</label
+              for="additionalIngredientAmount"
+              >Additional Ingredient Amount</label
             >
             <input
-              :id="'ingredientName-' + index"
-              :value="ingredient.name"
-              @input="updateLocalRecipeIngredient($event, 'name', index)"
-              name="ingredientName"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              id="additionalIngredientAmount"
+              ref="additionalIngredientAmount"
+              :value="additionalIngredientAmount"
+              name="additionalIngredientAmount"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
-              placeholder="Ingredient Name"
-            />
-          </div>
-          <div>
-            <label
-              class="block text-gray-700 text-sm font-bold mb-2"
-              :for="'ingredientAmount-' + index"
-              >Ingredient Amount</label
-            >
-            <input
-              :id="'ingredientAmount' + index"
-              :value="ingredient.amount"
-              @input="updateLocalRecipeIngredient($event, 'amount', index)"
-              name="ingredientAmount"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              type="text"
-              placeholder="Ingredient Amount"
+              placeholder="additional amount"
             />
           </div>
           <div class="flex items-center justify-between">
             <button
-              @click="deleteLocalRecipeIngredient($event, index)"
-              class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              @click="addLocalRecipeIngredient"
+              class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
             >
-              Delete Ingredient
+              Add Ingredient
             </button>
           </div>
         </div>
-      </div>
-      <div>
-        <div class="mb-4">
+        <div v-if="updatedRecipe" class="mb-8">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
-            for="additionalIngredientName"
-            >Additional Ingredient Name</label
+            for="recipeInstructions"
+            >Recipe Instructions</label
           >
-          <input
-            id="additionalIngredientName"
-            ref="additionalIngredientName"
-            :value="additionalIngredientName"
-            name="additionalIngredientName"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+          <textarea
+            id="instructions"
+            :value="updatedRecipe.instructions"
+            @input="updateLocalRecipe($event)"
+            name="instructions"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="text"
-            placeholder="Additional Ingredient Name"
-          />
-        </div>
-        <div>
-          <label
-            class="block text-gray-700 text-sm font-bold mb-2"
-            for="additionalIngredientAmount"
-            >Additional Ingredient Amount</label
-          >
-          <input
-            id="additionalIngredientAmount"
-            ref="additionalIngredientAmount"
-            :value="additionalIngredientAmount"
-            name="additionalIngredientAmount"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-            type="text"
-            placeholder="Additional Ingredient Amount"
-          />
+            placeholder="instructions"
+          ></textarea>
         </div>
         <div class="flex items-center justify-between">
           <button
-            @click="addLocalRecipeIngredient"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            @click="onCancelUpdate"
+            class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="button"
           >
-            Add Ingredient
+            Cancel
+          </button>
+          <button
+            :disabled="currentState === 'pending'"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            Update Recipe
           </button>
         </div>
-      </div>
-      <div v-if="updatedRecipe" class="mb-4">
-        <label
-          class="block text-gray-700 text-sm font-bold mb-2"
-          for="recipeInstructions"
-          >Recipe Instructions</label
-        >
-        <textarea
-          id="instructions"
-          :value="updatedRecipe.instructions"
-          @input="updateLocalRecipe($event)"
-          name="instructions"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          type="text"
-          placeholder="instructions"
-        ></textarea>
-      </div>
-      <div class="flex items-center justify-between">
-        <button
-          @click="onCancelUpdate"
-          class="bg-yellow-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          type="button"
-        >
-          Cancel
-        </button>
-        <button
-          :disabled="currentState === 'pending'"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          type="submit"
-        >
-          Update Recipe
-        </button>
-      </div>
-    </form>
-    <form
-      action=""
-      @submit.prevent="onUploadImage"
-      class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-      enctype="multipart/form-data"
-    >
-      <div>
-        <label
-          class="block text-gray-700 text-sm font-bold mb-2"
-          for="recipeImage"
-        >
-          Recipe Image
-        </label>
-        <div class="container-image">
-          <div
-            v-if="imagePreview"
-            class="image"
-            :style="`background-image: url('${imagePreview}')`"
-          ></div>
-          <div
-            v-else
-            class="image"
-            :style="`background-image: url('${cloudinaryOptimizedImage}')`"
-          ></div>
-        </div>
-        <div class="container-image-trigger">
-          <input
-            ref="fileInput"
-            @change="onFileSelected"
-            type="file"
-            name="image"
-            accept="image/*"
-            style="display:none"
-          />
-          <div v-if="image" class="image-name">
-            <span>{{ image.name }}</span>
-          </div>
-          <button @click="$refs.fileInput.click()" type="button">
-            Choose File
-          </button>
-        </div>
-        <div class="container-image-save">
-          <div v-if="image" class="image-clear">
-            <span @click="onRemoveImage">Clear Selection</span>
-          </div>
-        </div>
-      </div>
-      <div class="flex items-center justify-between">
-        <button
-          :disabled="currentState === 'pending'"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          type="submit"
-        >
-          Change Photo
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
     <Loader :showLoader="currentState === 'pending'" />
 
     <Modal v-if="showModal" @close="showModal = false">
@@ -301,11 +305,12 @@
 import { mapGetters } from 'vuex'
 import Loader from '@/components/Loader'
 import Modal from '@/components/Modal'
+import Error from '@/components/Error'
 export default {
   name: 'EditRecipe',
   layout: 'auth',
   middleware: ['auth', 'reset'],
-  components: { Loader, Modal },
+  components: { Loader, Modal, Error },
   data() {
     return {
       additionalIngredientName: '',

@@ -1,19 +1,50 @@
 <template>
-  <div>
-    <h1>Recipe</h1>
-    <div v-if="recipe">
-      <nuxt-link :to="'/recipes/' + this.$route.params.rid + '/edit'"
-        >Edit {{ recipe.recipeName }}</nuxt-link
-      >
+  <div class="page-recipe">
+    <div class="py-4 text-center">
+      <h1 class="text-3xl">RECIPE</h1>
     </div>
-    <p v-if="recipe">{{ recipe.recipeName }}</p>
-    <ul v-if="recipe">
-      <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
-        <span>{{ ingredient.amount }}</span>
-        <span>{{ ingredient.name }}</span>
-      </li>
-    </ul>
-    <p v-if="recipe">{{ recipe.instructions }}</p>
+    <nav class="py-4 text-center">
+      <nuxt-link
+        to="/recipes"
+        class="inline-block w-full xs:w-auto bg-green-500 text-white font-bold py-2 px-4 mb-4 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline disabled:opacity-50"
+        >All Recipes</nuxt-link
+      >
+      <nuxt-link
+        v-if="recipe"
+        :to="'/recipes/' + this.$route.params.rid + '/edit'"
+        class="inline-block w-full xs:w-auto bg-green-500 text-white font-bold py-2 px-4 mb-4 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline disabled:opacity-50"
+        >Edit {{ recipe.recipeName }}
+      </nuxt-link>
+    </nav>
+    <div v-if="recipe" class="sm:flex border-t-2 border-gray-600">
+      <div v-if="recipe.image" class="p-4">
+        <img
+          :src="recipe.image"
+          :alt="recipe.recipeName"
+          class="custom-max-width sm:max-w-xs"
+        />
+      </div>
+      <div
+        class="sm:flex sm:justify-center sm:items-center sm:flex-auto p-4 text-center bg-gray-300"
+      >
+        <p v-if="recipe.recipeName">{{ recipe.recipeName }}</p>
+      </div>
+    </div>
+    <div v-if="recipe" class="py-6 px-4 border-b-4 border-gray-600 bg-gray-300">
+      <ul v-if="recipe.ingredients">
+        <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
+          <p class="block text-gray-700 text-sm font-bold mb-2">
+            {{ recipe.ingredients.length > 1 ? 'Ingredients' : 'Ingredient' }}
+          </p>
+          <span>{{ ingredient.amount }}</span>
+          <span>{{ ingredient.name }}</span>
+        </li>
+      </ul>
+      <div v-if="recipe.instructions" class="mt-6">
+        <p class="block text-gray-700 text-sm font-bold mb-2">Instructions</p>
+        <span>{{ recipe.instructions }}</span>
+      </div>
+    </div>
     <Loader :showLoader="currentState === 'pending'" />
 
     <Modal v-if="showModal" @close="showModal = false">
