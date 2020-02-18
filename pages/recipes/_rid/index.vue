@@ -32,10 +32,12 @@
     </div>
     <div v-if="recipe" class="py-6 px-4 border-b-4 border-gray-600 bg-gray-300">
       <ul v-if="recipe.ingredients">
-        <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
-          <p class="block text-gray-700 text-sm font-bold mb-2">
+        <li>
+          <span class="block text-gray-700 text-sm font-bold mb-2">
             {{ recipe.ingredients.length > 1 ? 'Ingredients' : 'Ingredient' }}
-          </p>
+          </span>
+        </li>
+        <li v-for="(ingredient, index) in recipe.ingredients" :key="index">
           <span>{{ ingredient.amount }}</span>
           <span>{{ ingredient.name }}</span>
         </li>

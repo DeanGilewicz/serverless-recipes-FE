@@ -62,7 +62,7 @@
             </div>
           </div>
         </div>
-        <div class="">
+        <div>
           <button
             v-if="image"
             class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"

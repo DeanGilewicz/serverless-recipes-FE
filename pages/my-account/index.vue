@@ -1,30 +1,30 @@
 <template>
-  <div class="">
-    <div class="">
-			<h1>My Account</h1>
-      <div v-if="user" class="container-user">
-        <div class="user-name">
-          <p>Name</p>
-          <span>{{user.firstName}}</span> <span>{{user.lastName}}</span>
-        </div>
-        <div class="user-email-address">
-          <p>Email Address</p>
-          <span>{{user.emailAddress}}</span>
-        </div>
-        <div class="flex items-center justify-between">
-          <nuxt-link
-            to="/my-account/edit"
-            class="bg-yellow-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Edit Account
-          </nuxt-link>
-          <nuxt-link
-            to="/my-account/change-password"
-            class="bg-yellow-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Change Password
-          </nuxt-link>
-        </div>
+  <div class="page-my-account">
+    <div class="py-4 text-center">
+      <h1 class="text-3xl">MY ACCOUNT</h1>
+    </div>
+    <nav class="py-4 text-center">
+      <nuxt-link
+        to="/my-account/edit"
+        class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      >
+        Edit Account
+      </nuxt-link>
+      <nuxt-link
+        to="/my-account/change-password"
+        class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      >
+        Change Password
+      </nuxt-link>
+    </nav>
+    <div v-if="user" class="w-full max-w-md my-0 mx-auto">
+      <div class="my-2 py-4 px-4">
+        <p class="block text-gray-700 text-sm font-bold mb-2">Name</p>
+        <span>{{ user.firstName }}</span> <span>{{ user.lastName }}</span>
+      </div>
+      <div class="my-2 py-4 px-4">
+        <p class="block text-gray-700 text-sm font-bold mb-2">Email Address</p>
+        <span>{{ user.emailAddress }}</span>
       </div>
     </div>
   </div>

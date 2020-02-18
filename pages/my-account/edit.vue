@@ -1,20 +1,23 @@
 <template>
-  <div class="">
-    <div class="">
-      <h1>My Account</h1>
+  <div class="page-edit-account">
+    <div class="py-4 text-center">
+      <h1 class="text-3xl">EDIT ACCOUNT</h1>
+    </div>
+    <nav class="py-4 text-center">
+      <nuxt-link
+        to="/my-account"
+        class="inline-block w-full xs:w-auto bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline disabled:opacity-50"
+      >
+        Account
+      </nuxt-link>
+    </nav>
+    <div class="w-full max-w-md my-0 mx-auto">
       <form
         @submit.prevent="onSubmit"
-        class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        class="px-4 xs:px-8 pt-3 xs:pt-6 pb-4 xs:pb-8 mb-4"
         action=""
       >
-        <div v-if="errors.length > 0" class="mb-8 text-left">
-          <p>Oh no, we have some errors:</p>
-          <ul>
-            <li v-for="(error, index) in errors" :key="index" class="list-disc">
-              {{ error }}
-            </li>
-          </ul>
-        </div>
+        <Error :errors="errors" />
         <div v-if="user" class="mb-4">
           <label
             class="block text-gray-700 text-sm font-bold mb-2"
@@ -47,24 +50,24 @@
             placeholder="last name"
           />
         </div>
-        <div class="flex items-center justify-between">
+        <div class="pt-4 xs:flex xs:justify-between">
           <button
             @click="onCancelUpdate"
-            class="bg-yellow-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="button"
           >
             Cancel
           </button>
           <button
             @click="showModal = true"
-            class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            class="bg-red-500 hover:bg-red-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="button"
           >
             Delete User
           </button>
           <button
             :disabled="currentState === 'pending'"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold mb-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
           >
             Update User

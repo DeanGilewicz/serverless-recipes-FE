@@ -14,11 +14,11 @@
       <div
         v-for="recipe in recipes"
         :key="recipe.recipeId"
-        class="sm:flex border-t-2 border-gray-600"
+        class="mt-4 sm:mt-6 sm:flex border-t-2 border-gray-600"
       >
-        <div v-if="recipe.image" class="p-4 sm:border-b-4 sm:border-gray-600">
+        <div class="p-4 sm:border-b-4 sm:border-gray-600">
           <img
-            :src="recipe.image"
+            :src="cloudinaryOptimizedImage(recipe.image)"
             :alt="recipe.recipeName"
             class="custom-max-width sm:max-w-xs"
           />
@@ -26,7 +26,10 @@
         <div
           class="sm:flex sm:justify-center sm:items-center sm:flex-auto p-4 text-center bg-gray-300 border-b-4 border-gray-600"
         >
-          <nuxt-link :to="'/recipes/' + recipe.recipeId" class="block">
+          <nuxt-link
+            :to="'/recipes/' + recipe.recipeId"
+            class="block uppercase text-2xl"
+          >
             <h2>{{ recipe.recipeName }}</h2>
           </nuxt-link>
         </div>
@@ -88,6 +91,18 @@ export default {
       this.$store.dispatch('state-machine/setInitialState')
       // close modal
       this.showModal = false
+    },
+    cloudinaryOptimizedImage(image) {
+      if (image) {
+        const cloudinaryUploadUrl =
+          'https://res.cloudinary.com/cloudassets/image/upload/'
+        const optimizedUrl = image.split(cloudinaryUploadUrl)
+        // add cloudinary optimizations
+        optimizedUrl[0] = cloudinaryUploadUrl + 'q_auto,f_auto/'
+        return optimizedUrl.join('')
+      } else {
+        return 'https://res.cloudinary.com/cloudassets/image/upload/q_auto,f_auto/v1579839990/recipes/recipe-placeholder.png'
+      }
     }
   }
 }
