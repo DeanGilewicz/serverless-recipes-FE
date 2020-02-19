@@ -1,6 +1,10 @@
 require('dotenv').config() /* for axios */
 export default {
   mode: 'spa',
+  /* hosting on Netlfiy */
+  generate: {
+    fallback: true
+  },
   /*
    ** Headers of the page
    */
