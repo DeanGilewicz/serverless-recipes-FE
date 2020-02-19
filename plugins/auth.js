@@ -17,6 +17,7 @@ const isUserAuthed = () => {
     }
     return true
   }
+  return false
 }
 
 const getUserNoAuth = () => {

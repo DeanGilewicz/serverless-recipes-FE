@@ -14,25 +14,22 @@
       <div
         v-for="recipe in recipes"
         :key="recipe.recipeId"
-        class="mt-4 sm:mt-6 sm:flex border-t-2 border-gray-600"
+        class="mt-4 mb-4 sm:mt-6 border-t-2 border-gray-600"
       >
-        <div class="p-4 sm:border-b-4 sm:border-gray-600">
-          <img
-            :src="cloudinaryOptimizedImage(recipe.image)"
-            :alt="recipe.recipeName"
-            class="custom-max-width sm:max-w-xs"
-          />
-        </div>
-        <div
-          class="sm:flex sm:justify-center sm:items-center sm:flex-auto p-4 text-center bg-gray-300 border-b-4 border-gray-600"
-        >
-          <nuxt-link
-            :to="'/recipes/' + recipe.recipeId"
-            class="block uppercase text-2xl"
+        <nuxt-link :to="'/recipes/' + recipe.recipeId" class="sm:flex block">
+          <div class="p-4 sm:border-b-4 sm:border-gray-600 bg-gray-300">
+            <img
+              :src="cloudinaryOptimizedImage(recipe.image)"
+              :alt="recipe.recipeName"
+              class="custom-max-width sm:max-w-xs"
+            />
+          </div>
+          <div
+            class="sm:flex sm:justify-center sm:items-center sm:flex-auto p-4 text-center bg-gray-300 border-b-4 border-gray-600"
           >
-            <h2>{{ recipe.recipeName }}</h2>
-          </nuxt-link>
-        </div>
+            <h2 class="uppercase text-2xl">{{ recipe.recipeName }}</h2>
+          </div>
+        </nuxt-link>
       </div>
     </div>
 

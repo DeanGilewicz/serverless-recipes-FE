@@ -16,8 +16,12 @@
       <div v-if="this.$store.state.auth.user" class="hidden sm:block mb-2">
         <span>Hello, {{ this.$store.state.auth.user.emailAddress }}</span>
       </div>
-      <form @submit.prevent="onLogOut" class="" action="">
-        <input class="bg-transparent" value="Log Out" type="submit" />
+      <form @submit.prevent="onLogOut" action="">
+        <input
+          type="submit"
+          class="bg-transparent focus:outline-none cursor-pointer"
+          value="Log Out"
+        />
         <span v-if="errorMsg">{{ errorMsg }}</span>
       </form>
     </nav>
@@ -43,6 +47,8 @@ export default {
         // redirect
         return this.$router.push('/')
       }
+      // trigger loading state
+      this.$store.dispatch('state-machine/updateInitialState')
       // xhr logout
       this.$store
         .dispatch('auth/logout')

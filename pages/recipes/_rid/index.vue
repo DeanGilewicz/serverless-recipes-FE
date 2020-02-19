@@ -27,7 +27,9 @@
       <div
         class="sm:flex sm:justify-center sm:items-center sm:flex-auto p-4 text-center bg-gray-300"
       >
-        <p v-if="recipe.recipeName">{{ recipe.recipeName }}</p>
+        <p v-if="recipe.recipeName" class="uppercase text-2xl">
+          {{ recipe.recipeName }}
+        </p>
       </div>
     </div>
     <div v-if="recipe" class="py-6 px-4 border-b-4 border-gray-600 bg-gray-300">
